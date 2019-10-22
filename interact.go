@@ -1,17 +1,22 @@
 package libv2ray
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log"
+	"net"
+	"net/http"
 	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/2dust/AndroidLibV2rayLite/VPN"
 	mobasset "golang.org/x/mobile/asset"
 
 	v2core "v2ray.com/core"
+	v2net "v2ray.com/core/common/net"
 	v2filesystem "v2ray.com/core/common/platform/filesystem"
 	v2stats "v2ray.com/core/features/stats"
 	v2serial "v2ray.com/core/infra/conf/serial"
@@ -183,6 +188,53 @@ func TestConfig(ConfigureFileContent string) error {
 	initV2Env()
 	_, err := v2serial.LoadJSONConfig(strings.NewReader(ConfigureFileContent))
 	return err
+}
+
+func TestOutbound(ConfigureFileContent string) (string, error) {
+	initV2Env()
+	config, err := v2serial.LoadJSONConfig(strings.NewReader(ConfigureFileContent))
+	if err != nil {
+		return "", err
+	}
+
+	// dont listen to anything for test purpose
+	config.Inbound = nil
+
+	inst, err := v2core.New(config)
+	if err != nil {
+		return "", err
+	}
+
+	inst.Start()
+	defer inst.Close()
+
+	tr := &http.Transport{
+		MaxIdleConns:        10,
+		IdleConnTimeout:     10 * time.Second,
+		TLSHandshakeTimeout: 10 * time.Second,
+		DisableKeepAlives:   true,
+		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+			dest, err := v2net.ParseDestination(addr)
+			if err != nil {
+				return nil, err
+			}
+			return v2core.Dial(ctx, inst, dest)
+		},
+	}
+
+	c := &http.Client{
+		Transport: tr,
+		Timeout:   16 * time.Second,
+	}
+
+	start := time.Now()
+	resp, err := c.Get("http://www.google.com/gen_204")
+	elapsed := time.Since(start)
+
+	if resp.StatusCode != http.StatusNoContent {
+		return elapsed.String(), fmt.Errorf("Status is not 204, %s", resp.Status)
+	}
+	return elapsed.String(), nil
 }
 
 /*NewV2RayPoint new V2RayPoint*/
