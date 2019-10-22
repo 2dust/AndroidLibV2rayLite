@@ -214,7 +214,7 @@ func TestOutbound(ConfigureFileContent string) (int64, error) {
 		TLSHandshakeTimeout: 10 * time.Second,
 		DisableKeepAlives:   true,
 		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-			dest, err := v2net.ParseDestination(addr)
+			dest, err := v2net.ParseDestination(fmt.Sprintf("%s:%s", network, addr))
 			if err != nil {
 				return nil, err
 			}
