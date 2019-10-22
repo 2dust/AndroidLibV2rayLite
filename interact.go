@@ -190,11 +190,11 @@ func TestConfig(ConfigureFileContent string) error {
 	return err
 }
 
-func TestOutbound(ConfigureFileContent string) (string, error) {
+func TestOutbound(ConfigureFileContent string) (int64, error) {
 	initV2Env()
 	config, err := v2serial.LoadJSONConfig(strings.NewReader(ConfigureFileContent))
 	if err != nil {
-		return "", err
+		return -1, err
 	}
 
 	// dont listen to anything for test purpose
@@ -202,7 +202,7 @@ func TestOutbound(ConfigureFileContent string) (string, error) {
 
 	inst, err := v2core.New(config)
 	if err != nil {
-		return "", err
+		return -1, err
 	}
 
 	inst.Start()
@@ -229,12 +229,16 @@ func TestOutbound(ConfigureFileContent string) (string, error) {
 
 	start := time.Now()
 	resp, err := c.Get("http://www.google.com/gen_204")
+	if err != nil {
+		return -1, err
+	}
 	elapsed := time.Since(start)
+	ms := elapsed.Microseconds()
 
 	if resp.StatusCode != http.StatusNoContent {
-		return elapsed.String(), fmt.Errorf("Status is not 204, %s", resp.Status)
+		return ms, fmt.Errorf("Status is not 204, %s", resp.Status)
 	}
-	return elapsed.String(), nil
+	return ms, nil
 }
 
 /*NewV2RayPoint new V2RayPoint*/
