@@ -232,13 +232,12 @@ func TestOutbound(ConfigureFileContent string) (int64, error) {
 	if err != nil {
 		return -1, err
 	}
-	elapsed := time.Since(start)
-	ms := elapsed.Microseconds()
+	elapsed := time.Since(start).Milliseconds()
 
 	if resp.StatusCode != http.StatusNoContent {
-		return ms, fmt.Errorf("Status is not 204, %s", resp.Status)
+		return -1, fmt.Errorf("Status is not 204, %s", resp.Status)
 	}
-	return ms, nil
+	return elapsed, nil
 }
 
 /*NewV2RayPoint new V2RayPoint*/
