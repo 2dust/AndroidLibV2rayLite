@@ -196,8 +196,15 @@ func TestOutbound(ConfigureFileContent string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	// dont listen to anything for test purpose
 	config.Inbound = nil
+
 	inst, err := v2core.New(config)
+	if err != nil {
+		return "", err
+	}
+
 	inst.Start()
 	defer inst.Close()
 
