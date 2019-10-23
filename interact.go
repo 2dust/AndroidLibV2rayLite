@@ -199,6 +199,9 @@ func TestOutbound(ConfigureFileContent string) (int64, error) {
 
 	// dont listen to anything for test purpose
 	config.Inbound = nil
+	config.Transport = nil
+	// keep only basic features
+	config.App = config.App[:4]
 
 	inst, err := v2core.New(config)
 	if err != nil {
@@ -232,12 +235,10 @@ func TestOutbound(ConfigureFileContent string) (int64, error) {
 	if err != nil {
 		return -1, err
 	}
-	elapsed := time.Since(start).Milliseconds()
-
 	if resp.StatusCode != http.StatusNoContent {
-		return -1, fmt.Errorf("Status is not 204, %s", resp.Status)
+		return -1, fmt.Errorf("status != 204: %s", resp.Status)
 	}
-	return elapsed, nil
+	return time.Since(start).Milliseconds(), nil
 }
 
 /*NewV2RayPoint new V2RayPoint*/
