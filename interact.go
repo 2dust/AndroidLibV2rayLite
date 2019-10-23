@@ -191,6 +191,7 @@ func TestConfig(ConfigureFileContent string) error {
 }
 
 func TestOutbound(ConfigureFileContent string) (int64, error) {
+	initV2Env()
 	config, err := v2serial.LoadJSONConfig(strings.NewReader(ConfigureFileContent))
 	if err != nil {
 		return -1, err
