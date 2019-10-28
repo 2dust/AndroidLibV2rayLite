@@ -2,6 +2,7 @@ package libv2ray
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -40,10 +41,10 @@ type V2RayPoint struct {
 	statsManager v2stats.Manager
 
 	dialer    *VPN.ProtectedDialer
-	v2rayOP   *sync.Mutex
+	v2rayOP   sync.Mutex
 	closeChan chan struct{}
 
-	Vpoint    v2core.Server
+	Vpoint    *v2core.Instance
 	IsRunning bool
 
 	DomainName           string
@@ -130,7 +131,6 @@ func (v *V2RayPoint) shutdownInit() {
 }
 
 func (v *V2RayPoint) pointloop() error {
-
 	log.Println("loading v2ray config")
 	config, err := v2serial.LoadJSONConfig(strings.NewReader(v.ConfigureFileContent))
 	if err != nil {
@@ -139,13 +139,13 @@ func (v *V2RayPoint) pointloop() error {
 	}
 
 	log.Println("new v2ray core")
-	inst, err := v2core.New(config)
+	v.Vpoint, err = v2core.New(config)
 	if err != nil {
+		v.Vpoint = nil
 		log.Println(err)
 		return err
 	}
-	v.Vpoint = inst
-	v.statsManager = inst.GetFeature(v2stats.ManagerType()).(v2stats.Manager)
+	v.statsManager = v.Vpoint.GetFeature(v2stats.ManagerType()).(v2stats.Manager)
 
 	log.Println("start v2ray core")
 	v.IsRunning = true
@@ -159,6 +159,12 @@ func (v *V2RayPoint) pointloop() error {
 	v.SupportSet.Setup("")
 	v.SupportSet.OnEmitStatus(0, "Running")
 	return nil
+}
+
+func (v *V2RayPoint) MeasureDelay() (int64, error) {
+	v.v2rayOP.Lock()
+	defer v.v2rayOP.Unlock()
+	return measureInstDelay(v.Vpoint)
 }
 
 func initV2Env() {
@@ -190,7 +196,7 @@ func TestConfig(ConfigureFileContent string) error {
 	return err
 }
 
-func TestOutbound(ConfigureFileContent string) (int64, error) {
+func MeasureOutboundDelay(ConfigureFileContent string) (int64, error) {
 	initV2Env()
 	config, err := v2serial.LoadJSONConfig(strings.NewReader(ConfigureFileContent))
 	if err != nil {
@@ -201,7 +207,7 @@ func TestOutbound(ConfigureFileContent string) (int64, error) {
 	config.Inbound = nil
 	config.Transport = nil
 	// keep only basic features
-	config.App = config.App[:4]
+	config.App = config.App[:3]
 
 	inst, err := v2core.New(config)
 	if err != nil {
@@ -209,7 +215,46 @@ func TestOutbound(ConfigureFileContent string) (int64, error) {
 	}
 
 	inst.Start()
-	defer inst.Close()
+	delay, err := measureInstDelay(inst)
+	inst.Close()
+	return delay, err
+}
+
+/*NewV2RayPoint new V2RayPoint*/
+func NewV2RayPoint(s V2RayVPNServiceSupportsSet, adns bool) *V2RayPoint {
+	initV2Env()
+
+	// inject our own log writer
+	v2applog.RegisterHandlerCreator(v2applog.LogType_Console,
+		func(lt v2applog.LogType,
+			options v2applog.HandlerCreatorOptions) (v2commlog.Handler, error) {
+			return v2commlog.NewLogger(createStdoutLogWriter()), nil
+		})
+
+	dialer := VPN.NewPreotectedDialer(s)
+	v2internet.UseAlternativeSystemDialer(dialer)
+	return &V2RayPoint{
+		SupportSet:   s,
+		dialer:       dialer,
+		AsyncResolve: adns,
+	}
+}
+
+func CheckVersion() int {
+	return 21
+}
+
+/*CheckVersionX string
+This func will return libv2ray binding version and V2Ray version used.
+*/
+func CheckVersionX() string {
+	return fmt.Sprintf("Libv2rayLite V%d, Core V%s", CheckVersion(), v2core.Version())
+}
+
+func measureInstDelay(inst *v2core.Instance) (int64, error) {
+	if inst == nil {
+		return -1, errors.New("core instance nil")
+	}
 
 	tr := &http.Transport{
 		MaxIdleConns:        10,
@@ -239,36 +284,4 @@ func TestOutbound(ConfigureFileContent string) (int64, error) {
 		return -1, fmt.Errorf("status != 204: %s", resp.Status)
 	}
 	return time.Since(start).Milliseconds(), nil
-}
-
-/*NewV2RayPoint new V2RayPoint*/
-func NewV2RayPoint(s V2RayVPNServiceSupportsSet, adns bool) *V2RayPoint {
-	initV2Env()
-
-	// inject our own log writer
-	v2applog.RegisterHandlerCreator(v2applog.LogType_Console,
-		func(lt v2applog.LogType,
-			options v2applog.HandlerCreatorOptions) (v2commlog.Handler, error) {
-			return v2commlog.NewLogger(createStdoutLogWriter()), nil
-		})
-
-	dialer := VPN.NewPreotectedDialer(s)
-	v2internet.UseAlternativeSystemDialer(dialer)
-	return &V2RayPoint{
-		SupportSet:   s,
-		v2rayOP:      new(sync.Mutex),
-		dialer:       dialer,
-		AsyncResolve: adns,
-	}
-}
-
-func CheckVersion() int {
-	return 21
-}
-
-/*CheckVersionX string
-This func will return libv2ray binding version and V2Ray version used.
-*/
-func CheckVersionX() string {
-	return fmt.Sprintf("Libv2rayLite V%d, Core V%s", CheckVersion(), v2core.Version())
 }
