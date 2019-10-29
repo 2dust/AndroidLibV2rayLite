@@ -257,9 +257,7 @@ func measureInstDelay(inst *v2core.Instance) (int64, error) {
 	}
 
 	tr := &http.Transport{
-		MaxIdleConns:        10,
-		IdleConnTimeout:     10 * time.Second,
-		TLSHandshakeTimeout: 10 * time.Second,
+		TLSHandshakeTimeout: 6 * time.Second,
 		DisableKeepAlives:   true,
 		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
 			dest, err := v2net.ParseDestination(fmt.Sprintf("%s:%s", network, addr))
@@ -272,7 +270,7 @@ func measureInstDelay(inst *v2core.Instance) (int64, error) {
 
 	c := &http.Client{
 		Transport: tr,
-		Timeout:   16 * time.Second,
+		Timeout:   12 * time.Second,
 	}
 
 	start := time.Now()
@@ -283,5 +281,6 @@ func measureInstDelay(inst *v2core.Instance) (int64, error) {
 	if resp.StatusCode != http.StatusNoContent {
 		return -1, fmt.Errorf("status != 204: %s", resp.Status)
 	}
+	resp.Body.Close()
 	return time.Since(start).Milliseconds(), nil
 }

@@ -7,7 +7,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"strings"
 	"sync"
 	"time"
 
@@ -61,6 +60,8 @@ func (r *resolved) NextIP() {
 }
 
 func (r *resolved) currentIP() net.IP {
+	r.ipLock.Lock()
+	defer r.ipLock.Unlock()
 	if len(r.IPs) > 0 {
 		return r.IPs[r.ipIdx]
 	}
@@ -200,7 +201,7 @@ func (d *ProtectedDialer) Dial(ctx context.Context,
 	// v2ray server address,
 	// try to connect fixed IP if multiple IP parsed from domain,
 	// and switch to next IP if error occurred
-	if strings.Compare(Address, d.currentServer) == 0 {
+	if Address == d.currentServer {
 		if d.vServer == nil {
 			log.Println("Dial pending prepare  ...", Address)
 			<-d.resolveChan
