@@ -162,9 +162,18 @@ func (v *V2RayPoint) pointloop() error {
 }
 
 func (v *V2RayPoint) MeasureDelay() (int64, error) {
-	v.v2rayOP.Lock()
-	defer v.v2rayOP.Unlock()
-	return measureInstDelay(v.Vpoint)
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+
+	go func() {
+		select {
+		case <-v.closeChan:
+			// cancel request if close called during meansure
+			cancel()
+		case <-ctx.Done():
+		}
+	}()
+
+	return measureInstDelay(ctx, v.Vpoint)
 }
 
 func initV2Env() {
@@ -215,7 +224,7 @@ func MeasureOutboundDelay(ConfigureFileContent string) (int64, error) {
 	}
 
 	inst.Start()
-	delay, err := measureInstDelay(inst)
+	delay, err := measureInstDelay(context.Background(), inst)
 	inst.Close()
 	return delay, err
 }
@@ -251,7 +260,7 @@ func CheckVersionX() string {
 	return fmt.Sprintf("Libv2rayLite V%d, Core V%s", CheckVersion(), v2core.Version())
 }
 
-func measureInstDelay(inst *v2core.Instance) (int64, error) {
+func measureInstDelay(ctx context.Context, inst *v2core.Instance) (int64, error) {
 	if inst == nil {
 		return -1, errors.New("core instance nil")
 	}
@@ -273,8 +282,9 @@ func measureInstDelay(inst *v2core.Instance) (int64, error) {
 		Timeout:   12 * time.Second,
 	}
 
+	req, _ := http.NewRequestWithContext(ctx, "GET", "http://www.google.com/gen_204", nil)
 	start := time.Now()
-	resp, err := c.Get("http://www.google.com/gen_204")
+	resp, err := c.Do(req)
 	if err != nil {
 		return -1, err
 	}
