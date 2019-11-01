@@ -57,13 +57,13 @@ type V2RayVPNServiceSupportsSet interface {
 	Setup(Conf string) int
 	Prepare() int
 	Shutdown() int
-	Protect(int) int
+	Protect(int) bool
 	OnEmitStatus(int, string) int
 }
 
 /*RunLoop Run V2Ray main loop
  */
-func (v *V2RayPoint) RunLoop() (err error) {
+func (v *V2RayPoint) RunLoop(prefIPv6 bool) (err error) {
 	v.v2rayOP.Lock()
 	defer v.v2rayOP.Unlock()
 	//Construct Context
@@ -88,9 +88,9 @@ func (v *V2RayPoint) RunLoop() (err error) {
 		}()
 
 		if v.AsyncResolve {
-			go v.dialer.PrepareDomain(v.DomainName, v.closeChan)
+			go v.dialer.PrepareDomain(v.DomainName, v.closeChan, prefIPv6)
 		} else {
-			v.dialer.PrepareDomain(v.DomainName, v.closeChan)
+			v.dialer.PrepareDomain(v.DomainName, v.closeChan, prefIPv6)
 		}
 
 		err = v.pointloop()
