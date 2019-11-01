@@ -16,7 +16,7 @@ import (
 )
 
 type protectSet interface {
-	Protect(int) int
+	Protect(int) bool
 }
 
 type resolved struct {
@@ -83,6 +83,7 @@ func NewPreotectedDialer(p protectSet) *ProtectedDialer {
 type ProtectedDialer struct {
 	currentServer string
 	resolveChan   chan struct{}
+	preferIPv6    bool
 
 	vServer  *resolved
 	resolver *net.Resolver
@@ -136,6 +137,15 @@ func (d *ProtectedDialer) lookupAddr(addr string) (*resolved, error) {
 	for i, ia := range addrs {
 		IPs[i] = ia.IP
 	}
+	// LookupIPAddr returns a slice of IPs with IPv6 addrs in front,
+	// if user perfer not IPv6, revert the result so that IPv4 addr comes first
+	if !d.preferIPv6 && len(IPs) > 1 && IPs[0].To4() == nil && IPs[len(IPs)-1].To4() != nil {
+		for i := len(IPs)/2 - 1; i >= 0; i-- {
+			opp := len(IPs) - 1 - i
+			IPs[i], IPs[opp] = IPs[opp], IPs[i]
+		}
+		log.Printf("PrepareDomain Prefer NOT IPv6 %v\n", IPs)
+	}
 
 	rs := &resolved{
 		domain: host,
@@ -147,9 +157,10 @@ func (d *ProtectedDialer) lookupAddr(addr string) (*resolved, error) {
 }
 
 // PrepareDomain caches direct v2ray server host
-func (d *ProtectedDialer) PrepareDomain(domainName string, closeCh <-chan struct{}) {
+func (d *ProtectedDialer) PrepareDomain(domainName string, closeCh <-chan struct{}, prefIPv6 bool) {
 	log.Printf("Preparing Domain: %s", domainName)
 	d.currentServer = domainName
+	d.preferIPv6 = prefIPv6
 
 	defer close(d.resolveChan)
 	maxRetry := 10
@@ -250,7 +261,10 @@ func (d *ProtectedDialer) fdConn(ctx context.Context, ip net.IP, port int, fd in
 	defer unix.Close(fd)
 
 	// call android VPN service to "protect" the fd connecting straight out
-	d.Protect(fd)
+	if !d.Protect(fd) {
+		log.Printf("fdConn fail to protect, Close Fd: %d", fd)
+		return nil, errors.New("fail to protect")
+	}
 
 	sa := &unix.SockaddrInet6{
 		Port: port,
