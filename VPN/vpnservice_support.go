@@ -55,8 +55,7 @@ func (r *resolved) NextIP() {
 		r.ipIdx = 0
 	}
 
-	cur := r.currentIP()
-	log.Printf("switched to next IP: %s", cur)
+	log.Printf("switched to next IP: %v", r.IPs[r.ipIdx])
 }
 
 func (r *resolved) currentIP() net.IP {
