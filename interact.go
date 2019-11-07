@@ -216,7 +216,7 @@ func MeasureOutboundDelay(ConfigureFileContent string) (int64, error) {
 	config.Inbound = nil
 	config.Transport = nil
 	// keep only basic features
-	config.App = config.App[:3]
+	config.App = config.App[:4]
 
 	inst, err := v2core.New(config)
 	if err != nil {

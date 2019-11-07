@@ -288,7 +288,6 @@ func (d *ProtectedDialer) fdConn(ctx context.Context, ip net.IP, port int, fd in
 		log.Printf("fdConn FileConn Close Fd: %d Err: %v", fd, err)
 		return nil, err
 	}
-	conn.SetDeadline(time.Now().Add(time.Second * 16))
 
 	return conn, nil
 }
