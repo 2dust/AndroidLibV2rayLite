@@ -5,17 +5,14 @@ asset:
 	bash gen_assets.sh download
 	mkdir assets
 	cp -v data/*.dat assets/
-	cd assets;curl https://raw.githubusercontent.com/2dust/AndroidLibV2rayLite/master/data/geosite.dat > geosite.dat		
-	cd assets;curl https://raw.githubusercontent.com/2dust/AndroidLibV2rayLite/master/data/geoip.dat > geoip.dat
+	#cd assets;curl https://raw.githubusercontent.com/2dust/AndroidLibV2rayLite/master/data/geosite.dat > geosite.dat		
+	#cd assets;curl https://raw.githubusercontent.com/2dust/AndroidLibV2rayLite/master/data/geoip.dat > geoip.dat
 
 fetchDep:
 	go get -v golang.org/x/mobile/cmd/...
-	go get -v go.starlark.net/starlark
-	go get -v github.com/refraction-networking/utls
-	go get -v github.com/gorilla/websocket
-	go get -v -insecure v2ray.com/core
-	-go get  github.com/2dust/AndroidLibV2rayLite
-	go get github.com/2dust/AndroidLibV2rayLite
+	mkdir -p $(shell go env GOPATH)/src/v2ray.com/core
+	git clone https://github.com/v2fly/v2ray-core.git $(shell go env GOPATH)/src/v2ray.com/core
+	go get -d github.com/2dust/AndroidLibV2rayLite
 
 ANDROID_HOME=$(HOME)/android-sdk-linux
 export ANDROID_HOME
@@ -28,7 +25,7 @@ downloadGoMobile:
 
 BuildMobile:
 	gomobile init
-	env GO111MODULE=off gomobile bind -v -ldflags='-s -w' github.com/2dust/AndroidLibV2rayLite
+	gomobile bind -v -ldflags='-s -w' github.com/2dust/AndroidLibV2rayLite
 
 all: asset pb fetchDep
 	@echo DONE
