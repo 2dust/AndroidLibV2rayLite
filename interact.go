@@ -88,13 +88,9 @@ func (v *V2RayPoint) RunLoop(prefIPv6 bool) (err error) {
 		}()
 
 		if v.AsyncResolve {
-			go func() {
-				v.dialer.PrepareDomain(v.DomainName, v.closeChan, prefIPv6)
-				close(v.dialer.ResolveChan())
-			}()
+			go v.dialer.PrepareDomain(v.DomainName, v.closeChan, prefIPv6)
 		} else {
 			v.dialer.PrepareDomain(v.DomainName, v.closeChan, prefIPv6)
-			close(v.dialer.ResolveChan())
 		}
 
 		err = v.pointloop()
