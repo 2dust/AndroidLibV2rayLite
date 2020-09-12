@@ -250,14 +250,14 @@ func NewV2RayPoint(s V2RayVPNServiceSupportsSet, adns bool) *V2RayPoint {
 }
 
 func CheckVersion() int {
-	return 21
+	return 22
 }
 
 /*CheckVersionX string
 This func will return libv2ray binding version and V2Ray version used.
 */
 func CheckVersionX() string {
-	return fmt.Sprintf("Libv2rayLite V%d, Core V%s", CheckVersion(), v2core.Version())
+	return fmt.Sprintf("Lib v%d, Core v%s", CheckVersion(), v2core.Version())
 }
 
 func measureInstDelay(ctx context.Context, inst *v2core.Instance) (int64, error) {
