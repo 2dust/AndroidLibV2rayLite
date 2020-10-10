@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -29,8 +30,7 @@ import (
 )
 
 const (
-	v2Assert    = "v2ray.location.asset"
-	assetperfix = "/dev/libv2rayfs0/asset"
+	v2Asset = "v2ray.location.asset"
 )
 
 /*V2RayPoint V2Ray Point Server
@@ -176,23 +176,19 @@ func (v *V2RayPoint) MeasureDelay() (int64, error) {
 	return measureInstDelay(ctx, v.Vpoint)
 }
 
-func initV2Env() {
-	if os.Getenv(v2Assert) != "" {
-		return
-	}
+// InitV2Env set v2 asset path
+func InitV2Env(envPath string) {
 	//Initialize asset API, Since Raymond Will not let notify the asset location inside Process,
 	//We need to set location outside V2Ray
-	os.Setenv(v2Assert, assetperfix)
-	//Now we handle read
+	if len(envPath) > 0 {
+		os.Setenv(v2Asset, envPath)
+	}
+
+	//Now we handle read, fallback to gomobile asset (apk assets)
 	v2filesystem.NewFileReader = func(path string) (io.ReadCloser, error) {
-		if strings.HasPrefix(path, assetperfix) {
-			p := path[len(assetperfix)+1:]
-			//is it overridden?
-			//by, ok := overridedAssets[p]
-			//if ok {
-			//	return os.Open(by)
-			//}
-			return mobasset.Open(p)
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			_, file := filepath.Split(path)
+			return mobasset.Open(file)
 		}
 		return os.Open(path)
 	}
@@ -200,13 +196,11 @@ func initV2Env() {
 
 //Delegate Funcation
 func TestConfig(ConfigureFileContent string) error {
-	initV2Env()
 	_, err := v2serial.LoadJSONConfig(strings.NewReader(ConfigureFileContent))
 	return err
 }
 
 func MeasureOutboundDelay(ConfigureFileContent string) (int64, error) {
-	initV2Env()
 	config, err := v2serial.LoadJSONConfig(strings.NewReader(ConfigureFileContent))
 	if err != nil {
 		return -1, err
@@ -231,8 +225,6 @@ func MeasureOutboundDelay(ConfigureFileContent string) (int64, error) {
 
 /*NewV2RayPoint new V2RayPoint*/
 func NewV2RayPoint(s V2RayVPNServiceSupportsSet, adns bool) *V2RayPoint {
-	initV2Env()
-
 	// inject our own log writer
 	v2applog.RegisterHandlerCreator(v2applog.LogType_Console,
 		func(lt v2applog.LogType,
@@ -250,7 +242,7 @@ func NewV2RayPoint(s V2RayVPNServiceSupportsSet, adns bool) *V2RayPoint {
 }
 
 func CheckVersion() int {
-	return 22
+	return 23
 }
 
 /*CheckVersionX string
