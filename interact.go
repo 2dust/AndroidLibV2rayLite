@@ -274,7 +274,7 @@ func measureInstDelay(ctx context.Context, inst *v2core.Instance) (int64, error)
 		Timeout:   12 * time.Second,
 	}
 
-	req, _ := http.NewRequestWithContext(ctx, "GET", "http://www.google.com/gen_204", nil)
+	req, _ := http.NewRequestWithContext(ctx, "GET", "http://www.google.com/generate_204", nil)
 	start := time.Now()
 	resp, err := c.Do(req)
 	if err != nil {
