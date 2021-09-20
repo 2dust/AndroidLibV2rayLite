@@ -1,6 +1,6 @@
 module github.com/2dust/AndroidLibV2rayLite
 
-go 1.16
+go 1.17
 
 require (
 	github.com/v2fly/v2ray-core/v4 master
