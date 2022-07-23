@@ -24,7 +24,7 @@ install -m644 $__dir/tun2socks.mk $TMPDIR/
 
 pushd $TMPDIR
 git clone --depth=1 https://github.com/XTLS/badvpn.git
-git clone --depth=1 https://github.com/XTLS/libancillary.git
+git clone --depth=1 https://github.com/shadowsocks/libancillary.git
 $NDK_HOME/ndk-build \
 	NDK_PROJECT_PATH=. \
 	APP_BUILD_SCRIPT=./tun2socks.mk \
