@@ -197,8 +197,8 @@ github.com/v2fly/v2ray-core v1.24.5-0.20200705084059-b02a781ab9dc h1:noV90K5Lo5X
 github.com/v2fly/v2ray-core v1.24.5-0.20200705084059-b02a781ab9dc/go.mod h1:alwMPb78PSSNHG54qfh9Gt3ecdHrFes2gbIID/Edomk=
 github.com/v2fly/v2ray-core v4.15.0+incompatible h1:jHEKDQbfHWrmv158NV6z9SaFxCBjeYMxN1AraGPIGkM=
 github.com/v2fly/v2ray-core v4.15.0+incompatible/go.mod h1:epN2U0U1wJttla319Jy2mbBt4oSGymOR+BN8wZRNITA=
-github.com/v2fly/v2ray-core/v4 v4.35.2-0.20210312001040-0ae9ba5247e8 h1:hhzjWDRNEGz5Nv0ZltoK+63ShY/gyE12t3cg0F5xj40=
-github.com/v2fly/v2ray-core/v4 v4.35.2-0.20210312001040-0ae9ba5247e8/go.mod h1:Q0J1b2q/Ptt9GYd0nYSol/ZOEdR42TPSutMff05sXEw=
+github.com/v2fly/v2ray-core/v5 v4.35.2-0.20210312001040-0ae9ba5247e8 h1:hhzjWDRNEGz5Nv0ZltoK+63ShY/gyE12t3cg0F5xj40=
+github.com/v2fly/v2ray-core/v5 v4.35.2-0.20210312001040-0ae9ba5247e8/go.mod h1:Q0J1b2q/Ptt9GYd0nYSol/ZOEdR42TPSutMff05sXEw=
 github.com/v2ray/v2ray-core v4.21.0+incompatible h1:ZA+dZzOGZZVBTgzyr1SzKVdAfZcvwiGSgsOvOCs97ZA=
 github.com/v2ray/v2ray-core v4.21.0+incompatible/go.mod h1:rw5MmNP8dVqdNLK/NMLeZqWntBGOESa11nSv+LZevKM=
 github.com/vcptr/v2ray-core/v4 v4.21.2 h1:a+CoQSVv+wd9a10rqpHgk/YNMbuNlPsJD/c6Veb+Xmw=
