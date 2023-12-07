@@ -37,4 +37,13 @@ jobs:
          chmod +x build.sh
          go mod tidy
          ./build.sh
-      
+    - name: Create zip file
+      run: |
+         zip AndroidLibV2rayLite.zip libv2ray.aar libv2ray-sources.jar
+    - name: Upload AndroidLibV2rayLite.zip to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ./AndroidLibV2rayLite.zip
+        tag: ${{ github.ref }}
+        file_glob: true
