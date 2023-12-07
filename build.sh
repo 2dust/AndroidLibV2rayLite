@@ -41,3 +41,4 @@ go get -u github.com/v2fly/v2ray-core/v5
 go get -d github.com/2dust/AndroidLibV2rayLite
 gomobile init
 gomobile bind -androidapi 19 -v -ldflags='-s -w' github.com/2dust/AndroidLibV2rayLite
+ls
