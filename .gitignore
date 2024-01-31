@@ -3,6 +3,7 @@ gradle/build.gradle
 *.pb.go
 binary*.go
 conf/demo/
+.idea
 
 demo/
 assets/
