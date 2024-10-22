@@ -1,15 +1,15 @@
 module github.com/2dust/AndroidLibV2rayLite
 
-go 1.20
+go 1.22
 
 require (
-	github.com/v2fly/v2ray-core/v5 v5.12.1
+	github.com/v2fly/v2ray-core/v5 v5.21.0
 	golang.org/x/mobile v0.0.0-20210220033013-bdb1ca9a1e08
 	golang.org/x/sys v0.26.0
 )
 
 require (
-	github.com/adrg/xdg v0.4.0 // indirect
+	github.com/adrg/xdg v0.5.0 // indirect
 	github.com/aead/cmac v0.0.0-20160719120800-7af84192f0b1 // indirect
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
