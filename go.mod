@@ -48,7 +48,7 @@ require (
 	github.com/pion/sctp v1.8.7 // indirect
 	github.com/pion/transport/v2 v2.2.10 // indirect
 	github.com/pires/go-proxyproto v0.8.0 // indirect
-	github.com/quic-go/quic-go v0.48.0 // indirect
+	github.com/quic-go/quic-go v0.48.1 // indirect
 	github.com/refraction-networking/utls v1.6.7 // indirect
 	github.com/riobard/go-bloom v0.0.0-20200614022211-cdc8013cb5b3 // indirect
 	github.com/secure-io/siv-go v0.0.0-20180922214919-5ff40651e2c4 // indirect
