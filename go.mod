@@ -5,7 +5,7 @@ go 1.23.2
 
 
 require (
-	github.com/v2fly/v2ray-core/v5 v5.21.0
+	github.com/v2fly/v2ray-core/v5.21.0
 	golang.org/x/mobile v0.0.0-20241016134751-7ff83004ec2c
 	golang.org/x/sys v0.26.0
 )
@@ -22,7 +22,7 @@ require (
 	github.com/ebfe/bcrypt_pbkdf v0.0.0-20140212075826-3c8d2dcb253a // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gaukas/godicttls v0.0.4 // indirect
-	github.com/go-chi/chi/v5 v5.1.1 // indirect
+	https://github.com/go-chi/chi v5.1.0 // indirect
 	github.com/go-chi/render v1.0.3 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
