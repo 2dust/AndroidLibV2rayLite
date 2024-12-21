@@ -23,6 +23,8 @@ trap 'echo -e "Aborted, error $? in command: $BASH_COMMAND"; trap ERR; clear_tmp
 install -m644 $__dir/tun2socks.mk $TMPDIR/
 
 pushd $TMPDIR
+ln -s $__dir/badvpn badvpn
+ln -s $__dir/libancillary libancillary
 $NDK_HOME/ndk-build \
 	NDK_PROJECT_PATH=. \
 	APP_BUILD_SCRIPT=./tun2socks.mk \
