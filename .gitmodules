@@ -1,0 +1,3 @@
+[submodule "badvpn"]
+	path = badvpn
+	url = https://github.com/XTLS/badvpn.git
