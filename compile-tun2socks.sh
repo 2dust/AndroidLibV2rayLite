@@ -32,7 +32,8 @@ $NDK_HOME/ndk-build \
 	APP_PLATFORM=android-19 \
 	NDK_LIBS_OUT=$TMPDIR/libs \
 	NDK_OUT=$TMPDIR/tmp \
-	APP_SHORT_COMMANDS=false LOCAL_SHORT_COMMANDS=false -B -j4
+	APP_SHORT_COMMANDS=false LOCAL_SHORT_COMMANDS=false -B -j4 \
+        LOCAL_LDFLAGS=-Wl,--build-id=none
 
 tar cvfz $__dir/libtun2socks.so.tgz libs
 popd
