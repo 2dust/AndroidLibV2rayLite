@@ -244,7 +244,7 @@ CheckVersionX string
 This func will return libv2ray binding version and V2Ray version used.
 */
 func CheckVersionX() string {
-	var version = 27
+	var version = 30
 	return fmt.Sprintf("Lib v%d, V2fly-core v%s", version, v2core.Version())
 }
 
