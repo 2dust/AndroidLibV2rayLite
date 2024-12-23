@@ -3,6 +3,11 @@
 version: 2
 updates:
 
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      # Check for updates to GitHub Actions every daily
+      interval: "daily"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
