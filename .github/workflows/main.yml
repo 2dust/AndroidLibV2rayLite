@@ -5,7 +5,7 @@ on:
     inputs:
       release_tag:
         required: true
-        description: 'Release tag something like v1.18.1'
+        description: 'Release tag something like v5.23.0'
         type: string
 
 jobs:
@@ -15,32 +15,40 @@ jobs:
     - name: Setup Golang
       uses: actions/setup-go@v5
       with:
-        go-version: '1.20'
+        go-version: '1.23.4'
+
+    - name: Patch Go use 600296
+      if: steps.cache-libv2ray-restore.outputs.cache-hit != 'true'
+      #https://go-review.googlesource.com/c/go/+/600296
+      run: |
+       cd "$(go env GOROOT)"
+       curl "https://go-review.googlesource.com/changes/go~600296/revisions/5/patch" | base64 -d | patch --verbose -p 1
+    
+    - name: Install gomobile
+      run: |
+        go install golang.org/x/mobile/cmd/gomobile@latest
+        export PATH=$PATH:~/go/bin
   
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    - name: Setup JDK
+    - name: Setup Java
       uses: actions/setup-java@v4
       with:
-        java-version: 17
         distribution: 'temurin'
+        java-version: '21'
         
     - name: Setup Android SDK Tools
-      uses: android-actions/setup-android@v3.2.1
+      uses: android-actions/setup-android@v3.2.2
       with:
         cmdline-tools-version: 10406996
         
     - name: Setup Android NDK
       uses: nttld/setup-ndk@v1.5.0
       with:
-        ndk-version: 'r26b'
+        ndk-version: 'r27b'
         link-to-sdk: true
-    - name: Setup Go Mobile
-      run: |
-        go install golang.org/x/mobile/cmd/gomobile@latest
-        export PATH=$PATH:~/go/bin
-
+    
     - name: Build
       run: |
          mkdir -p assets data
@@ -48,7 +56,7 @@ jobs:
          cp -v data/*.dat assets/
          gomobile init
          go mod tidy
-         gomobile bind -v -androidapi 19 -ldflags='-s -w' ./
+         gomobile bind -v -androidapi 21 -ldflags='-s -w' ./
     - name: Upload AndroidLibV2rayLite to release
       uses: svenstaro/upload-release-action@v2
       with:
