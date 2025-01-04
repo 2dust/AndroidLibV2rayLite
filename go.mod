@@ -75,5 +75,3 @@ require (
 	gvisor.dev/gvisor v0.0.0-20231020174304-b8a429915ff1 // indirect
 	lukechampine.com/blake3 v1.3.0 // indirect
 )
-
-replace google.golang.org/grpc v1.69.2 => google.golang.org/grpc v1.66.3
