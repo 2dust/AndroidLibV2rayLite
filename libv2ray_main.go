@@ -198,6 +198,12 @@ func InitV2Env(envPath string) {
 	}
 }
 
+// Test Config
+func TestConfig(ConfigureFileContent string) error {
+	_, err := v2serial.LoadJSONConfig(strings.NewReader(ConfigureFileContent))
+	return err
+}
+
 func MeasureOutboundDelay(ConfigureFileContent string, url string) (int64, error) {
 	config, err := v2serial.LoadJSONConfig(strings.NewReader(ConfigureFileContent))
 	if err != nil {
