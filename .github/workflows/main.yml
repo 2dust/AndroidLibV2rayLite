@@ -51,7 +51,6 @@ jobs:
          bash gen_assets.sh download
          cp -v data/*.dat assets/
          gomobile init
-         go mod tidy
          gomobile bind -v -androidapi 21 -trimpath -ldflags='-s -w -buildid=' ./
     - name: Upload AndroidLibV2rayLite to release
       uses: svenstaro/upload-release-action@v2
