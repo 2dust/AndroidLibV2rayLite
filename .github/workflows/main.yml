@@ -32,7 +32,7 @@ jobs:
         java-version: '21'
         
     - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
+      uses: android-actions/setup-android@v3.2.2
       with:
         log-accepted-android-sdk-licenses: false
         cmdline-tools-version: '12266719'
