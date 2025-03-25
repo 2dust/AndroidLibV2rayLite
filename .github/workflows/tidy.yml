@@ -1,4 +1,4 @@
-name: Check and Update v2fly-core
+name: Check and Update v2ray-core
 
 on:
   schedule:
@@ -36,8 +36,12 @@ jobs:
         id: compare-tags
         run: |
           if [ "$LATEST_TAG_NAME" != "$CURRENT_TAG_NAME" ]; then
-            echo "Tags are different. Updating..."
-            echo "needs_update=true" >> $GITHUB_ENV
+              if [ "$(printf '%s\n' "$LATEST_TAG_NAME" "$CURRENT_TAG_NAME" | sort -V | tail -n1)" == "$CURRENT_TAG_NAME" ]; then 
+                echo "Upstream LATEST_TAG_NAME less than the CURRENT_TAG_NAME, no update needed."
+              else
+                echo "Tags are different. Updating..."
+                echo "needs_update=true" >> $GITHUB_ENV
+              fi
           else
             echo "Tags are the same. No update needed."
             echo "needs_update=false" >> $GITHUB_ENV
@@ -53,6 +57,9 @@ jobs:
         if: env.needs_update == 'true'
         run: |
           go get github.com/v2fly/v2ray-core@${{ env.LATEST_TAG_SHA }}
+          go get -u
+          go get gvisor.dev/gvisor@go
+          go get github.com/OmarTariq612/goech@v0.0.0-20240405204721-8e2e1dafd3a0
           go mod tidy -v
           git diff
 
@@ -61,7 +68,7 @@ jobs:
         if: env.needs_update == 'true'
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Updating v2ray-core to ${{ env.LATEST_TAG_NAME }} ${{ env.LATEST_TAG_SHA }}
+          commit_message: Updating xray-core to ${{ env.LATEST_TAG_NAME }} ${{ env.LATEST_TAG_SHA }}
           tagging_message: ${{ env.LATEST_TAG_NAME }}
 
       - name: Trigger build
