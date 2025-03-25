@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        required: true
+        required: false
         description: 'Release tag something like v5.23.0'
         type: string
   pull_request:
