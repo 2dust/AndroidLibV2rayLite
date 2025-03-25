@@ -54,7 +54,7 @@ jobs:
          go mod tidy
          gomobile bind -v -androidapi 21 -trimpath -ldflags='-s -w -buildid=' ./
 
-    - name: Upload AndroidLibXrayLite to release
+    - name: Upload AndroidLibV2rayLite to release
       if: github.event.inputs.release_tag != ''
       uses: svenstaro/upload-release-action@v2
       with:
