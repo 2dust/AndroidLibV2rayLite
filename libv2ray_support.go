@@ -215,7 +215,7 @@ func (d *ProtectedDialer) getFd(network v2net.Network) (fd int, err error) {
 func (d *ProtectedDialer) Dial(ctx context.Context,
 	src v2net.Address, dest v2net.Destination, sockopt *v2internet.SocketConfig) (net.Conn, error) {
 
-	network := dest.Network.SystemString()
+	// network := dest.Network.SystemString()
 	Address := dest.NetAddr()
 
 	// v2ray server address,
@@ -233,9 +233,9 @@ func (d *ProtectedDialer) Dial(ctx context.Context,
 			}
 		}
 
-		// if time.Since(d.vServer.lastResolved) > time.Minute*30 {
-		//	go d.PrepareDomain(Address, nil, d.preferIPv6)
-		// }
+		if time.Since(d.vServer.lastResolved) > time.Minute*30 {
+			go d.PrepareDomain(Address, nil, d.preferIPv6)
+		}
 
 		fd, err := d.getFd(dest.Network)
 		if err != nil {
@@ -253,7 +253,7 @@ func (d *ProtectedDialer) Dial(ctx context.Context,
 	}
 
 	// v2ray connecting to "domestic" servers, no caching results
-	log.Printf("Not Using Prepared: %s,%s", network, Address)
+	// log.Printf("Not Using Prepared: %s,%s", network, Address)
 	resolved, err := d.lookupAddr(Address)
 	if err != nil {
 		return nil, err
@@ -295,7 +295,7 @@ func (d *ProtectedDialer) fdConn(ctx context.Context, ip net.IP, port int, fd in
 		}
 	} else {
 		if err := unix.Connect(fd, sa); err != nil {
-			log.Printf("fdConn unix.Connect err, Close Fd: %d Err: %v", fd, err)
+			// log.Printf("fdConn unix.Connect err, Close Fd: %d Err: %v", fd, err)
 			return nil, err
 		}
 	}
