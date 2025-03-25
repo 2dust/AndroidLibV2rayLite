@@ -5,7 +5,7 @@ on:
     inputs:
       release_tag:
         required: false
-        description: 'Release tag something like v25.3.25'
+        description: 'Release tag something like v5.29.3'
         type: string
   pull_request:
     branches:
