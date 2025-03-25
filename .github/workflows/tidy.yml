@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout our repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: '0'
 
@@ -65,7 +65,7 @@ jobs:
       - name: Commit and push changes
         id: auto-commit-action
         if: env.needs_update == 'true'
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5.1.0
         with:
           commit_message: Updating v2ray-core to ${{ env.LATEST_TAG_NAME }} ${{ env.LATEST_TAG_SHA }}
           tagging_message: ${{ env.LATEST_TAG_NAME }}
