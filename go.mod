@@ -8,10 +8,13 @@ require (
 	golang.org/x/sys v0.31.0
 )
 
+require github.com/pion/transport/v3 v3.0.7 // indirect
+
 require (
 	github.com/adrg/xdg v0.5.3 // indirect
 	github.com/aead/cmac v0.0.0-20160719120800-7af84192f0b1 // indirect
 	github.com/andybalholm/brotli v1.1.1 // indirect
+	github.com/apernet/quic-go v0.48.2-0.20241104191913-cb103fcecfe7 // indirect
 	github.com/boljen/go-bitmap v0.0.0-20151001105940-23cd2fb0ce7d // indirect
 	github.com/bufbuild/protocompile v0.14.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
@@ -40,7 +43,7 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pion/dtls/v2 v2.2.12 // indirect
-	github.com/pion/logging v0.2.2 // indirect
+	github.com/pion/logging v0.2.3 // indirect
 	github.com/pion/randutil v0.1.0 // indirect
 	github.com/pion/sctp v1.8.37 // indirect
 	github.com/pion/transport/v2 v2.2.10 // indirect
@@ -48,7 +51,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.50.1 // indirect
-        github.com/apernet/quic-go v0.48.2-0.20241104191913-cb103fcecfe7
 	github.com/refraction-networking/utls v1.6.7 // indirect
 	github.com/riobard/go-bloom v0.0.0-20200614022211-cdc8013cb5b3 // indirect
 	github.com/rs/cors v1.7.0 // indirect
