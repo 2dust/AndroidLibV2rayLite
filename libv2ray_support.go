@@ -269,7 +269,11 @@ func (d *ProtectedDialer) Dial(ctx context.Context,
 	return d.fdConn(ctx, resolved.IPs[0], resolved.Port, dest.Network, fd)
 }
 
-func (d *ProtectedDialer) fdConn(ctx context.Context, ip net.IP, port int, network v2net.Network, fd int) (net.Conn, error) {
+func (d *ProtectedDialer) DestIpAddress() net.IP {
+ 	return d.vServer.currentIP()
+}
+ 
+func (d *ProtectedDialer) fdConn(ctx context.Context, ip net.IP, port int, fd int) (net.Conn, error) {
 
 	defer unix.Close(fd)
 
