@@ -279,7 +279,7 @@ func measureInstDelay(ctx context.Context, inst *v2core.Instance, url string) (i
 	if len(url) <= 0 {
 		url = "https://www.google.com/generate_204"
 	}
-	req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
+	req, _ := http.NewRequestWithContext(ctx, "GET", "https://www.google.com/generate_204", nil)
 	start := time.Now()
 	resp, err := c.Do(req)
 	if err != nil {
