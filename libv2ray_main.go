@@ -19,6 +19,7 @@ import (
 	v2core "github.com/v2fly/v2ray-core/v5"
 	v2net "github.com/v2fly/v2ray-core/v5/common/net"
 	v2filesystem "github.com/v2fly/v2ray-core/v5/common/platform/filesystem"
+	"github.com/xtls/xray-core/common/serial"
 	v2stats "github.com/v2fly/v2ray-core/v5/features/stats"
 	v2serial "github.com/v2fly/v2ray-core/v5/infra/conf/serial"
 	_ "github.com/v2fly/v2ray-core/v5/main/distro/all"
@@ -214,7 +215,13 @@ func MeasureOutboundDelay(ConfigureFileContent string, url string) (int64, error
 	config.Inbound = nil
 	config.Transport = nil
 	// keep only basic features
-	config.App = config.App[:4]
+	var essentialApp []*serial.TypedMessage
+ 	for _, app := range config.App {
+ 		if app.Type == "xray.app.proxyman.OutboundConfig" || app.Type == "xray.app.dispatcher.Config" || app.Type == "xray.app.log.Config" {
+ 			essentialApp = append(essentialApp, app)
+ 		}
+ 	}
+ 	config.App = essentialApp
 
 	inst, err := v2core.New(config)
 	if err != nil {
