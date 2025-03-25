@@ -12,7 +12,7 @@ require (
 	github.com/adrg/xdg v0.5.3 // indirect
 	github.com/aead/cmac v0.0.0-20160719120800-7af84192f0b1 // indirect
 	github.com/andybalholm/brotli v1.0.6 // indirect
-	github.com/apernet/quic-go v0.48.2-0.20241104191913-cb103fcecfe7 // indirect
+	github.com/apernet/quic-go v0.49.0 // indirect
 	github.com/boljen/go-bitmap v0.0.0-20151001105940-23cd2fb0ce7d // indirect
 	github.com/bufbuild/protocompile v0.14.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.1 // indirect
