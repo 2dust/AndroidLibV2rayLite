@@ -3,7 +3,7 @@ module github.com/2dust/AndroidLibV2rayLite
 go 1.24.1
 
 require (
-	github.com/v2fly/v2ray-core/v5 v5.29.2
+	github.com/v2fly/v2ray-core/v5 v5.29.3
 	golang.org/x/mobile v0.0.0-20250305212854-3a7bc9f8a4de
 	golang.org/x/sys v0.31.0
 )
@@ -83,3 +83,4 @@ require (
 	lukechampine.com/blake3 v1.4.0 // indirect
 	nhooyr.io/websocket v1.8.17 // indirect
 )
+replace google.golang.org/grpc v1.70.0 => google.golang.org/grpc v1.66.3
