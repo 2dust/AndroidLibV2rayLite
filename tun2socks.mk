@@ -15,46 +15,34 @@
 #
 LOCAL_PATH := $(call my-dir)
 ROOT_PATH := $(LOCAL_PATH)
-
 ########################################################
 ## libancillary
 ########################################################
-
 include $(CLEAR_VARS)
-
 ANCILLARY_SOURCE := fd_recv.c fd_send.c
-
 LOCAL_MODULE := libancillary
 #LOCAL_CFLAGS += -I$(LOCAL_PATH)/libancillary
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/libancillary
 LOCAL_SRC_FILES := $(addprefix libancillary/, $(ANCILLARY_SOURCE))
-
 include $(BUILD_STATIC_LIBRARY)
-
 ########################################################
 ## tun2socks
 ########################################################
-
 include $(CLEAR_VARS)
-
 LOCAL_CFLAGS := -std=gnu99
 LOCAL_CFLAGS += -DBADVPN_THREADWORK_USE_PTHREAD -DBADVPN_LINUX -DBADVPN_BREACTOR_BADVPN -D_GNU_SOURCE
 LOCAL_CFLAGS += -DBADVPN_USE_SIGNALFD -DBADVPN_USE_EPOLL
 LOCAL_CFLAGS += -DBADVPN_LITTLE_ENDIAN -DBADVPN_THREAD_SAFE
 LOCAL_CFLAGS += -DNDEBUG -DANDROID
 LOCAL_CFLAGS += -I
-
 LOCAL_STATIC_LIBRARIES := libancillary
-
 LOCAL_C_INCLUDES := \
-	$(LOCAL_PATH)/badvpn/libancillary \
         $(LOCAL_PATH)/badvpn/lwip/src/include/ipv4 \
         $(LOCAL_PATH)/badvpn/lwip/src/include/ipv6 \
         $(LOCAL_PATH)/badvpn/lwip/src/include \
         $(LOCAL_PATH)/badvpn/lwip/custom \
         $(LOCAL_PATH)/badvpn \
 	$(LOCAL_PATH)/libancillary
-
 TUN2SOCKS_SOURCES := \
         base/BLog_syslog.c \
         system/BReactor_badvpn.c \
@@ -64,6 +52,8 @@ TUN2SOCKS_SOURCES := \
         system/BTime.c \
         system/BUnixSignal.c \
         system/BNetwork.c \
+        system/BDatagram_common.c \
+        system/BDatagram_unix.c \
         flow/StreamRecvInterface.c \
         flow/PacketRecvInterface.c \
         flow/PacketPassInterface.c \
@@ -113,17 +103,14 @@ TUN2SOCKS_SOURCES := \
         base/DebugObject.c \
         base/BLog.c \
         base/BPending.c \
-		system/BDatagram_unix.c \
         flowextra/PacketPassInactivityMonitor.c \
         tun2socks/SocksUdpGwClient.c \
-        udpgw_client/UdpGwClient.c
-
+        udpgw_client/UdpGwClient.c \
+        socks_udp_client/SocksUdpClient.c
 LOCAL_MODULE := tun2socks
-
 LOCAL_LDLIBS := -ldl -llog
-
+LOCAL_LDFLAGS=-Wl,--build-id=none
 LOCAL_SRC_FILES := $(addprefix badvpn/, $(TUN2SOCKS_SOURCES))
-
 LOCAL_BUILD_SCRIPT := BUILD_EXECUTABLE
 LOCAL_MAKEFILE     := $(local-makefile)
 $(call check-defined-LOCAL_MODULE,$(LOCAL_BUILD_SCRIPT))
