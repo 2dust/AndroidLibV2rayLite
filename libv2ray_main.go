@@ -19,6 +19,7 @@ import (
 	v2core "github.com/v2fly/v2ray-core/v5"
 	v2net "github.com/v2fly/v2ray-core/v5/common/net"
 	v2filesystem "github.com/v2fly/v2ray-core/v5/common/platform/filesystem"
+	"github.com/xtls/xray-core/common/serial"
 	v2stats "github.com/v2fly/v2ray-core/v5/features/stats"
 	v2serial "github.com/v2fly/v2ray-core/v5/infra/conf/serial"
 	_ "github.com/v2fly/v2ray-core/v5/main/distro/all"
@@ -181,13 +182,16 @@ func (v *V2RayPoint) MeasureDelay(url string) (int64, error) {
 }
 
 // InitV2Env set v2 asset path
-func InitV2Env(envPath string) {
+func InitV2Env(envPath string, key string) {
 	//Initialize asset API, Since Raymond Will not let notify the asset location inside Process,
 	//We need to set location outside V2Ray
 	if len(envPath) > 0 {
 		os.Setenv(v2Asset, envPath)
 	}
-
+        if len(key) > 0 {
+ 		os.Setenv(xudpBaseKey, key)
+ 	}
+	
 	//Now we handle read, fallback to gomobile asset (apk assets)
 	v2filesystem.NewFileReader = func(path string) (io.ReadCloser, error) {
 		if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -214,7 +218,13 @@ func MeasureOutboundDelay(ConfigureFileContent string, url string) (int64, error
 	config.Inbound = nil
 	config.Transport = nil
 	// keep only basic features
-	config.App = config.App[:4]
+	var essentialApp []*serial.TypedMessage
+ 	for _, app := range config.App {
+ 		if app.Type == "xray.app.proxyman.OutboundConfig" || app.Type == "xray.app.dispatcher.Config" || app.Type == "xray.app.log.Config" {
+ 			essentialApp = append(essentialApp, app)
+ 		}
+ 	}
+ 	config.App = essentialApp
 
 	inst, err := v2core.New(config)
 	if err != nil {
@@ -279,7 +289,7 @@ func measureInstDelay(ctx context.Context, inst *v2core.Instance, url string) (i
 	if len(url) <= 0 {
 		url = "https://www.google.com/generate_204"
 	}
-	req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
+	req, _ := http.NewRequestWithContext(ctx, "GET", "https://www.google.com/generate_204", nil)
 	start := time.Now()
 	resp, err := c.Do(req)
 	if err != nil {
