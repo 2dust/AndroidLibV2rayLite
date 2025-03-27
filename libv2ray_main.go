@@ -189,7 +189,7 @@ func InitV2Env(envPath string, key string) {
 		os.Setenv(v2Asset, envPath)
 		os.Setenv(v2Cert, envPath)
 	}
-	if len(key) > 0 {
+        if len(key) > 0 {
 		os.Setenv(xudpBaseKey, key)
 	}
 
