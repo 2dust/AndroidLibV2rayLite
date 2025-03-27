@@ -16,21 +16,23 @@ import (
 
 	mobasset "golang.org/x/mobile/asset"
 
-	v2core "github.com/v2fly/v2ray-core/v5"
-	v2net "github.com/v2fly/v2ray-core/v5/common/net"
-	v2filesystem "github.com/v2fly/v2ray-core/v5/common/platform/filesystem"
+	v2net "github.com/xtls/xray-core/common/net"
+	v2filesystem "github.com/xtls/xray-core/common/platform/filesystem"
 	"github.com/xtls/xray-core/common/serial"
-	v2stats "github.com/v2fly/v2ray-core/v5/features/stats"
-	v2serial "github.com/v2fly/v2ray-core/v5/infra/conf/serial"
-	_ "github.com/v2fly/v2ray-core/v5/main/distro/all"
-	v2internet "github.com/v2fly/v2ray-core/v5/transport/internet"
+	v2core "github.com/xtls/xray-core/core"
+	v2stats "github.com/xtls/xray-core/features/stats"
+	v2serial "github.com/xtls/xray-core/infra/conf/serial"
+	_ "github.com/xtls/xray-core/main/distro/all"
+	v2internet "github.com/xtls/xray-core/transport/internet"
 
-	v2applog "github.com/v2fly/v2ray-core/v5/app/log"
-	v2commlog "github.com/v2fly/v2ray-core/v5/common/log"
+	v2applog "github.com/xtls/xray-core/app/log"
+	v2commlog "github.com/xtls/xray-core/common/log"
 )
 
 const (
-	v2Asset = "v2ray.location.asset"
+	v2Asset     = "xray.location.asset"
+	v2Cert      = "xray.location.cert"
+	xudpBaseKey = "xray.xudp.basekey"
 )
 
 /*
@@ -67,40 +69,41 @@ type V2RayVPNServiceSupportsSet interface {
 func (v *V2RayPoint) RunLoop(prefIPv6 bool) (err error) {
 	v.v2rayOP.Lock()
 	defer v.v2rayOP.Unlock()
-	//Construct Context
 
-	if !v.IsRunning {
-		v.closeChan = make(chan struct{})
-		v.dialer.PrepareResolveChan()
-		go func() {
-			select {
-			// wait until resolved
-			case <-v.dialer.ResolveChan():
-				// shutdown VPNService if server name can not reolved
-				if !v.dialer.IsVServerReady() {
-					log.Println("vServer cannot resolved, shutdown")
-					v.StopLoop()
-					v.SupportSet.Shutdown()
-				}
-
-			// stop waiting if manually closed
-			case <-v.closeChan:
-			}
-		}()
-
-		if v.AsyncResolve {
-			go func() {
-				v.dialer.PrepareDomain(v.DomainName, v.closeChan, prefIPv6)
-				close(v.dialer.ResolveChan())
-			}()
-		} else {
-			v.dialer.PrepareDomain(v.DomainName, v.closeChan, prefIPv6)
-			close(v.dialer.ResolveChan())
-		}
-
-		err = v.pointloop()
+	if v.IsRunning {
+		return
 	}
+
+	v.closeChan = make(chan struct{})
+	v.dialer.PrepareResolveChan()
+
+	go v.handleResolve()
+
+	prepareDomain := func() {
+		v.dialer.PrepareDomain(v.DomainName, v.closeChan, prefIPv6)
+		close(v.dialer.ResolveChan())
+	}
+
+	if v.AsyncResolve {
+		go prepareDomain()
+	} else {
+		prepareDomain()
+	}
+
+	err = v.pointloop()
 	return
+}
+
+func (v *V2RayPoint) handleResolve() {
+	select {
+	case <-v.dialer.ResolveChan():
+		if !v.dialer.IsVServerReady() {
+			log.Println("vServer cannot resolved, shutdown")
+			v.StopLoop()
+			v.SupportSet.Shutdown()
+		}
+	case <-v.closeChan:
+	}
 }
 
 /*StopLoop Stop V2Ray main loop
@@ -116,7 +119,7 @@ func (v *V2RayPoint) StopLoop() (err error) {
 	return
 }
 
-// Delegate Funcation
+// Delegate Function
 func (v V2RayPoint) QueryStats(tag string, direct string) int64 {
 	if v.statsManager == nil {
 		return 0
@@ -136,14 +139,14 @@ func (v *V2RayPoint) shutdownInit() {
 }
 
 func (v *V2RayPoint) pointloop() error {
-	log.Println("loading v2ray config")
+	log.Println("loading core config")
 	config, err := v2serial.LoadJSONConfig(strings.NewReader(v.ConfigureFileContent))
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
-	log.Println("new v2ray core")
+	log.Println("new core")
 	v.Vpoint, err = v2core.New(config)
 	if err != nil {
 		v.Vpoint = nil
@@ -152,7 +155,7 @@ func (v *V2RayPoint) pointloop() error {
 	}
 	v.statsManager = v.Vpoint.GetFeature(v2stats.ManagerType()).(v2stats.Manager)
 
-	log.Println("start v2ray core")
+	log.Println("start core")
 	v.IsRunning = true
 	if err := v.Vpoint.Start(); err != nil {
 		v.IsRunning = false
@@ -172,7 +175,7 @@ func (v *V2RayPoint) MeasureDelay(url string) (int64, error) {
 	go func() {
 		select {
 		case <-v.closeChan:
-			// cancel request if close called during meansure
+			// cancel request if close called during measure
 			cancel()
 		case <-ctx.Done():
 		}
@@ -187,11 +190,12 @@ func InitV2Env(envPath string, key string) {
 	//We need to set location outside V2Ray
 	if len(envPath) > 0 {
 		os.Setenv(v2Asset, envPath)
+		os.Setenv(v2Cert, envPath)
 	}
-        if len(key) > 0 {
- 		os.Setenv(xudpBaseKey, key)
- 	}
-	
+	if len(key) > 0 {
+		os.Setenv(xudpBaseKey, key)
+	}
+
 	//Now we handle read, fallback to gomobile asset (apk assets)
 	v2filesystem.NewFileReader = func(path string) (io.ReadCloser, error) {
 		if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -202,29 +206,23 @@ func InitV2Env(envPath string, key string) {
 	}
 }
 
-// Test Config
-func TestConfig(ConfigureFileContent string) error {
-	_, err := v2serial.LoadJSONConfig(strings.NewReader(ConfigureFileContent))
-	return err
-}
-
 func MeasureOutboundDelay(ConfigureFileContent string, url string) (int64, error) {
 	config, err := v2serial.LoadJSONConfig(strings.NewReader(ConfigureFileContent))
 	if err != nil {
 		return -1, err
 	}
 
-	// dont listen to anything for test purpose
+	// don't listen to anything for test purpose
 	config.Inbound = nil
-	config.Transport = nil
+	// config.App: (fakedns), log, dispatcher, InboundConfig, OutboundConfig, (stats), router, dns, (policy)
 	// keep only basic features
 	var essentialApp []*serial.TypedMessage
- 	for _, app := range config.App {
- 		if app.Type == "xray.app.proxyman.OutboundConfig" || app.Type == "xray.app.dispatcher.Config" || app.Type == "xray.app.log.Config" {
- 			essentialApp = append(essentialApp, app)
- 		}
- 	}
- 	config.App = essentialApp
+	for _, app := range config.App {
+		if app.Type == "xray.app.proxyman.OutboundConfig" || app.Type == "xray.app.dispatcher.Config" || app.Type == "xray.app.log.Config" {
+			essentialApp = append(essentialApp, app)
+		}
+	}
+	config.App = essentialApp
 
 	inst, err := v2core.New(config)
 	if err != nil {
@@ -246,7 +244,7 @@ func NewV2RayPoint(s V2RayVPNServiceSupportsSet, adns bool) *V2RayPoint {
 			return v2commlog.NewLogger(createStdoutLogWriter()), nil
 		})
 
-	dialer := NewPreotectedDialer(s)
+	dialer := NewProtectedDialer(s)
 	v2internet.UseAlternativeSystemDialer(dialer)
 	return &V2RayPoint{
 		SupportSet:   s,
@@ -261,7 +259,7 @@ This func will return libv2ray binding version and V2Ray version used.
 */
 func CheckVersionX() string {
 	var version = 30
-	return fmt.Sprintf("Lib v%d, V2fly-core v%s", version, v2core.Version())
+	return fmt.Sprintf("Lib v%d, Xray-core v%s", version, v2core.Version())
 }
 
 func measureInstDelay(ctx context.Context, inst *v2core.Instance, url string) (int64, error) {
@@ -289,12 +287,13 @@ func measureInstDelay(ctx context.Context, inst *v2core.Instance, url string) (i
 	if len(url) <= 0 {
 		url = "https://www.google.com/generate_204"
 	}
-	req, _ := http.NewRequestWithContext(ctx, "GET", "https://www.google.com/generate_204", nil)
+	req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
 	start := time.Now()
 	resp, err := c.Do(req)
 	if err != nil {
 		return -1, err
 	}
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
 		return -1, fmt.Errorf("status != 20x: %s", resp.Status)
 	}
@@ -302,7 +301,7 @@ func measureInstDelay(ctx context.Context, inst *v2core.Instance, url string) (i
 	return time.Since(start).Milliseconds(), nil
 }
 
-// This struct creates our own log writer without datatime stamp
+// This struct creates our own log writer without datetime stamp
 // As Android adds time stamps on each line
 type consoleLogWriter struct {
 	logger *log.Logger
