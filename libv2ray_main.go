@@ -152,7 +152,7 @@ func (v *V2RayPoint) pointloop() error {
 	}
 	v.statsManager = v.Vpoint.GetFeature(v2stats.ManagerType()).(v2stats.Manager)
 
-	log.Println("start core")
+	log.Println("start v2ray core")
 	v.IsRunning = true
 	if err := v.Vpoint.Start(); err != nil {
 		v.IsRunning = false
