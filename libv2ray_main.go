@@ -16,24 +16,23 @@ import (
 
 	mobasset "golang.org/x/mobile/asset"
 
-	v2net "github.com/xtls/xray-core/common/net"
-	v2filesystem "github.com/xtls/xray-core/common/platform/filesystem"
+	v2core "github.com/v2fly/v2ray-core/v5"
+	v2net "github.com/v2fly/v2ray-core/v5/common/net"
+	v2filesystem "github.com/v2fly/v2ray-core/v5/common/platform/filesystem"
 	"github.com/xtls/xray-core/common/serial"
-	v2core "github.com/xtls/xray-core/core"
-	v2stats "github.com/xtls/xray-core/features/stats"
-	v2serial "github.com/xtls/xray-core/infra/conf/serial"
-	_ "github.com/xtls/xray-core/main/distro/all"
-	v2internet "github.com/xtls/xray-core/transport/internet"
-
-	v2applog "github.com/xtls/xray-core/app/log"
-	v2commlog "github.com/xtls/xray-core/common/log"
+	v2stats "github.com/v2fly/v2ray-core/v5/features/stats"
+	v2serial "github.com/v2fly/v2ray-core/v5/infra/conf/serial"
+	_ "github.com/v2fly/v2ray-core/v5/main/distro/all"
+	v2internet "github.com/v2fly/v2ray-core/v5/transport/internet"
+        v2applog "github.com/v2fly/v2ray-core/v5/app/log"
+	v2commlog "github.com/v2fly/v2ray-core/v5/common/log"
 )
 
 const (
-	v2Asset     = "xray.location.asset"
-	v2Cert      = "xray.location.cert"
-	xudpBaseKey = "xray.xudp.basekey"
+	v2Asset = "v2ray.location.asset"
 )
+
+/*
 
 /*
 V2RayPoint V2Ray Point Server
