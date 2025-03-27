@@ -33,8 +33,6 @@ const (
 )
 
 /*
-
-/*
 V2RayPoint V2Ray Point Server
 This is territory of Go, so no getter and setters!
 */
@@ -138,14 +136,14 @@ func (v *V2RayPoint) shutdownInit() {
 }
 
 func (v *V2RayPoint) pointloop() error {
-	log.Println("loading core config")
+	log.Println("loading v2ray config")
 	config, err := v2serial.LoadJSONConfig(strings.NewReader(v.ConfigureFileContent))
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
-	log.Println("new core")
+	log.Println("new v2ray core")
 	v.Vpoint, err = v2core.New(config)
 	if err != nil {
 		v.Vpoint = nil
@@ -205,6 +203,12 @@ func InitV2Env(envPath string, key string) {
 	}
 }
 
+// Test Config
+ func TestConfig(ConfigureFileContent string) error {
+ 	_, err := v2serial.LoadJSONConfig(strings.NewReader(ConfigureFileContent))
+ 	return err
+}
+ 
 func MeasureOutboundDelay(ConfigureFileContent string, url string) (int64, error) {
 	config, err := v2serial.LoadJSONConfig(strings.NewReader(ConfigureFileContent))
 	if err != nil {
