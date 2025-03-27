@@ -69,8 +69,8 @@ func (r *resolved) currentIP() net.IP {
 	return nil
 }
 
-// NewPreotectedDialer ...
-func NewPreotectedDialer(p protectSet) *ProtectedDialer {
+// NewProtectedDialer ...
+func NewProtectedDialer(p protectSet) *ProtectedDialer {
 	d := &ProtectedDialer{
 		// prefer native lookup on Android
 		resolver:   &net.Resolver{PreferGo: false},
