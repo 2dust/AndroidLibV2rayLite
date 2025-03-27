@@ -118,7 +118,7 @@ func (v *V2RayPoint) StopLoop() (err error) {
 	return
 }
 
-// Delegate Funcation
+// Delegate Function
 func (v V2RayPoint) QueryStats(tag string, direct string) int64 {
 	if v.statsManager == nil {
 		return 0
@@ -174,7 +174,7 @@ func (v *V2RayPoint) MeasureDelay(url string) (int64, error) {
 	go func() {
 		select {
 		case <-v.closeChan:
-			// cancel request if close called during meansure
+			// cancel request if close called during measure
 			cancel()
 		case <-ctx.Done():
 		}
@@ -216,7 +216,7 @@ func MeasureOutboundDelay(ConfigureFileContent string, url string) (int64, error
 		return -1, err
 	}
 
-	// dont listen to anything for test purpose
+	// don't listen to anything for test purpose
 	config.Inbound = nil
 	config.Transport = nil
 	// keep only basic features
@@ -248,7 +248,7 @@ func NewV2RayPoint(s V2RayVPNServiceSupportsSet, adns bool) *V2RayPoint {
 			return v2commlog.NewLogger(createStdoutLogWriter()), nil
 		})
 
-	dialer := NewPreotectedDialer(s)
+	dialer := NewProtectedDialer(s)
 	v2internet.UseAlternativeSystemDialer(dialer)
 	return &V2RayPoint{
 		SupportSet:   s,
@@ -304,7 +304,7 @@ func measureInstDelay(ctx context.Context, inst *v2core.Instance, url string) (i
 	return time.Since(start).Milliseconds(), nil
 }
 
-// This struct creates our own log writer without datatime stamp
+// This struct creates our own log writer without datetime stamp
 // As Android adds time stamps on each line
 type consoleLogWriter struct {
 	logger *log.Logger
