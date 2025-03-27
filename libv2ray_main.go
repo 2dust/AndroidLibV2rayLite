@@ -190,8 +190,8 @@ func InitV2Env(envPath string, key string) {
 		os.Setenv(v2Cert, envPath)
 	}
         if len(key) > 0 {
-		os.Setenv(xudpBaseKey, key)
-	}
+	        os.Setenv(xudpBaseKey, key)
+        }
 
 	//Now we handle read, fallback to gomobile asset (apk assets)
 	v2filesystem.NewFileReader = func(path string) (io.ReadCloser, error) {
