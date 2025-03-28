@@ -69,38 +69,40 @@ func (v *V2RayPoint) RunLoop(prefIPv6 bool) (err error) {
 	defer v.v2rayOP.Unlock()
 	//Construct Context
 
-	if !v.IsRunning {
-		v.closeChan = make(chan struct{})
-		v.dialer.PrepareResolveChan()
-		go func() {
-			select {
-			// wait until resolved
-			case <-v.dialer.ResolveChan():
-				// shutdown VPNService if server name can not reolved
-				if !v.dialer.IsVServerReady() {
-					log.Println("vServer cannot resolved, shutdown")
-					v.StopLoop()
-					v.SupportSet.Shutdown()
-				}
-
-			// stop waiting if manually closed
-			case <-v.closeChan:
-			}
-		}()
-
-		if v.AsyncResolve {
-			go func() {
-				v.dialer.PrepareDomain(v.DomainName, v.closeChan, prefIPv6)
-				close(v.dialer.ResolveChan())
-			}()
-		} else {
-			v.dialer.PrepareDomain(v.DomainName, v.closeChan, prefIPv6)
-			close(v.dialer.ResolveChan())
-		}
-
-		err = v.pointloop()
+	if v.IsRunning {
+		return
 	}
+
+	v.closeChan = make(chan struct{})
+	v.dialer.PrepareResolveChan()
+
+	go v.handleResolve()
+
+	prepareDomain := func() {
+		v.dialer.PrepareDomain(v.DomainName, v.closeChan, prefIPv6)
+		close(v.dialer.ResolveChan())
+	}
+
+	if v.AsyncResolve {
+		go prepareDomain()
+	} else {
+		prepareDomain()
+	}
+
+	err = v.pointloop()
 	return
+}
+
+func (v *V2RayPoint) handleResolve() {
+	select {
+	case <-v.dialer.ResolveChan():
+		if !v.dialer.IsVServerReady() {
+			log.Println("vServer cannot resolved, shutdown")
+			v.StopLoop()
+			v.SupportSet.Shutdown()
+		}
+	case <-v.closeChan:
+	}
 }
 
 /*StopLoop Stop V2Ray main loop
@@ -116,7 +118,7 @@ func (v *V2RayPoint) StopLoop() (err error) {
 	return
 }
 
-// Delegate Funcation
+// Delegate Function
 func (v V2RayPoint) QueryStats(tag string, direct string) int64 {
 	if v.statsManager == nil {
 		return 0
@@ -172,7 +174,7 @@ func (v *V2RayPoint) MeasureDelay(url string) (int64, error) {
 	go func() {
 		select {
 		case <-v.closeChan:
-			// cancel request if close called during meansure
+			// cancel request if close called during measure
 			cancel()
 		case <-ctx.Done():
 		}
@@ -214,10 +216,10 @@ func MeasureOutboundDelay(ConfigureFileContent string, url string) (int64, error
 		return -1, err
 	}
 
-	// dont listen to anything for test purpose
+	// don't listen to anything for test purpose
 	config.Inbound = nil
 	config.Transport = nil
-	// keep only basic features
+	// config.App: (fakedns), log, dispatcher, InboundConfig, OutboundConfig, (stats), router, dns, (policy)
 	var essentialApp []*serial.TypedMessage
  	for _, app := range config.App {
  		if app.Type == "xray.app.proxyman.OutboundConfig" || app.Type == "xray.app.dispatcher.Config" || app.Type == "xray.app.log.Config" {
@@ -246,7 +248,7 @@ func NewV2RayPoint(s V2RayVPNServiceSupportsSet, adns bool) *V2RayPoint {
 			return v2commlog.NewLogger(createStdoutLogWriter()), nil
 		})
 
-	dialer := NewPreotectedDialer(s)
+	dialer := NewProtectedDialer(s)
 	v2internet.UseAlternativeSystemDialer(dialer)
 	return &V2RayPoint{
 		SupportSet:   s,
@@ -302,7 +304,7 @@ func measureInstDelay(ctx context.Context, inst *v2core.Instance, url string) (i
 	return time.Since(start).Milliseconds(), nil
 }
 
-// This struct creates our own log writer without datatime stamp
+// This struct creates our own log writer without datetime stamp
 // As Android adds time stamps on each line
 type consoleLogWriter struct {
 	logger *log.Logger
