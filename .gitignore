@@ -1,11 +1,83 @@
-.vscode
-gradle/build.gradle
-*.pb.go
-binary*.go
-conf/demo/
-.idea
+# Ignore Visual Studio Code settings
+.vscode/
 
+# Ignore Gradle build files
+.gradle/
+build/
+
+# Ignore local configuration file
+local.properties
+
+# Ignore Protocol Buffer generated files
+*.pb.go
+
+# Ignore binary files
+binary*.go
+
+# Ignore demo configuration
+conf/demo/
+
+# Ignore IntelliJ IDEA settings
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Ignore Android Studio specific files
+/.idea/
+/*.iml
+/.gradle
+/build
+/captures
+.externalNativeBuild
+
+# Ignore demo files
 demo/
+
+# Ignore assets
 assets/
+
+# Ignore V2Ray library files
 libv2ray*.[a|j]ar
+
+# Ignore tarball files
 *.tgz
+
+# Ignore MacOS system files
+.DS_Store
+
+# Ignore Windows system files
+Thumbs.db
+ehthumbs.db
+
+# Ignore log files
+*.log
+
+# Ignore temporary files
+*.tmp
+*.temp
+*.swp
+*~
+.tmp/
+
+# Ignore compiled Java files
+*.class
+
+# Ignore package files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Ignore virtual environment
+.venv/
+env/
+
+# Ignore Python files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
