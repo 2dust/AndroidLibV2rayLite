@@ -1,50 +1,41 @@
-# IDE configurations
+# Ignore IDE/Editor directories and files
 .vscode/
 .idea/
 
-# Gradle build file
+# Ignore build directories and files
 gradle/build.gradle
-
-# Generated Go files
+demo/
+assets/
+build/
+bin/
+out/
 *.pb.go
-
-# Binary Go files
 binary*.go
 
-# Configuration demo files
-conf/demo/
-
-# Demo directory
-demo/
-
-# Assets directory
-assets/
-
-# V2Ray library files
-libv2ray*.[a|j]ar
-
-# Compressed archive files
-*.tgz
-
-# System files
+# Ignore OS generated files
 .DS_Store
 Thumbs.db
 
-# Log files
-*.log
+# Ignore compressed files
+*.tgz
+*.gz
+*.zip
 
-# Temporary files
+# Ignore logs and temporary files
+*.log
 *.tmp
 
-# Lock files
-*.lock
+# Ignore Go binary files
+*.exe
+*.dll
+*.so
 
-# Certificate files
-*.pem
-*.crt
-*.key
+# Ignore dependency directories
+vendor/
+node_modules/
 
-# Build output directories
-build/
-out/
-target/
+# Ignore generated libraries
+libv2ray*.[a|j]ar
+
+# Ignore configuration files
+conf/demo/
