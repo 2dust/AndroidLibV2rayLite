@@ -184,15 +184,12 @@ func (v *V2RayPoint) MeasureDelay(url string) (int64, error) {
 }
 
 // InitV2Env set v2 asset path
-func InitV2Env(envPath string, key string) {
+func InitV2Env(envPath string) {
 	//Initialize asset API, Since Raymond Will not let notify the asset location inside Process,
 	//We need to set location outside V2Ray
 	if len(envPath) > 0 {
 		os.Setenv(v2Asset, envPath)
 	}
-        if len(key) > 0 {
- 		os.Setenv(xudpBaseKey, key)
- 	}
 	
 	//Now we handle read, fallback to gomobile asset (apk assets)
 	v2filesystem.NewFileReader = func(path string) (io.ReadCloser, error) {
