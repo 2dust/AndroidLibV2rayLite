@@ -4,7 +4,7 @@ go 1.24.2
 
 require (
 	github.com/v2fly/v2ray-core/v5 v5.29.3
-        github.com/xtls/xray-core v1.250306.0
+	github.com/xtls/xray-core v1.250306.0
 	golang.org/x/mobile v0.0.0-20250305212854-3a7bc9f8a4de
 	golang.org/x/sys v0.31.0
 )
@@ -82,7 +82,7 @@ require (
 	google.golang.org/grpc v1.71.0 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gvisor.dev/gvisor v0.0.0-20240320123526-dc6abceb7ff0 // indirect
+	gvisor.dev/gvisor v0.0.0-20250402222442-ae48befd1d56 // indirect
 	lukechampine.com/blake3 v1.4.0 // indirect
 	nhooyr.io/websocket v1.8.17 // indirect
 )
