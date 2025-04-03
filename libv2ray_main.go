@@ -19,7 +19,6 @@ import (
 	v2core "github.com/v2fly/v2ray-core/v5"
 	v2net "github.com/v2fly/v2ray-core/v5/common/net"
 	v2filesystem "github.com/v2fly/v2ray-core/v5/common/platform/filesystem"
-	"github.com/xtls/xray-core/common/serial"
 	v2stats "github.com/v2fly/v2ray-core/v5/features/stats"
 	v2serial "github.com/v2fly/v2ray-core/v5/infra/conf/serial"
 	_ "github.com/v2fly/v2ray-core/v5/main/distro/all"
