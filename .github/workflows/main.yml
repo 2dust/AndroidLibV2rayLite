@@ -4,47 +4,44 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        required: false
-        description: 'Release tag something like v5.29.3'
+        required: true
+        description: 'Release tag something like v5.23.0'
         type: string
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-
-    - name: Checkout repository
-      uses: actions/checkout@v4.2.2
-      
     - name: Setup Golang
-      uses: actions/setup-go@v5.4.0
+      uses: actions/setup-go@v5
       with:
-        go-version-file: 'go.mod'
+        go-version: '1.24.2'
 
     - name: Install gomobile
       run: |
         go install golang.org/x/mobile/cmd/gomobile@latest
         export PATH=$PATH:~/go/bin
-        
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3.2.0
+  
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Java
+      uses: actions/setup-java@v4
       with:
-        log-accepted-android-sdk-licenses: false
-        cmdline-tools-version: '12266719'
-        packages: 'platforms;android-35 build-tools;35.0.0 platform-tools'
-
-    - name: Install NDK
-      run: |
-        echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
-          --channel=3 \
-          --install "ndk;29.0.13113456"
-        echo "NDK_HOME=$ANDROID_HOME/ndk/29.0.13113456" >> $GITHUB_ENV
-
+        distribution: 'temurin'
+        java-version: '21'
+        
+    - name: Setup Android SDK Tools
+      uses: android-actions/setup-android@v3.2.2
+      with:
+        cmdline-tools-version: 10406996
+        
+    - name: Setup Android NDK
+      uses: nttld/setup-ndk@v1.5.0
+      with:
+        ndk-version: 'r27b'
+        link-to-sdk: true
+    
     - name: Build
       run: |
          mkdir -p assets data
@@ -52,10 +49,8 @@ jobs:
          cp -v data/*.dat assets/
          gomobile init
          go mod tidy
-         gomobile bind -v -androidapi 21 -trimpath -ldflags='-s -w -buildid=' ./
-
+         gomobile bind -v -androidapi 21 -ldflags='-s -w' ./
     - name: Upload AndroidLibV2rayLite to release
-      if: github.event.inputs.release_tag != ''
       uses: svenstaro/upload-release-action@v2
       with:
         file: ./libv2ray*r

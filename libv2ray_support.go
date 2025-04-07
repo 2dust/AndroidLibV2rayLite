@@ -69,8 +69,8 @@ func (r *resolved) currentIP() net.IP {
 	return nil
 }
 
-// NewProtectedDialer ...
-func NewProtectedDialer(p protectSet) *ProtectedDialer {
+// NewPreotectedDialer ...
+func NewPreotectedDialer(p protectSet) *ProtectedDialer {
 	d := &ProtectedDialer{
 		// prefer native lookup on Android
 		resolver:   &net.Resolver{PreferGo: false},
@@ -215,7 +215,7 @@ func (d *ProtectedDialer) getFd(network v2net.Network) (fd int, err error) {
 func (d *ProtectedDialer) Dial(ctx context.Context,
 	src v2net.Address, dest v2net.Destination, sockopt *v2internet.SocketConfig) (net.Conn, error) {
 
-	// network := dest.Network.SystemString()
+	network := dest.Network.SystemString()
 	Address := dest.NetAddr()
 
 	// v2ray server address,
@@ -233,9 +233,9 @@ func (d *ProtectedDialer) Dial(ctx context.Context,
 			}
 		}
 
-		// if time.Since(d.vServer.lastResolved) > time.Minute*30 {
-		//	go d.PrepareDomain(Address, nil, d.preferIPv6)
-		// }
+		if time.Since(d.vServer.lastResolved) > time.Minute*30 {
+			go d.PrepareDomain(Address, nil, d.preferIPv6)
+		}
 
 		fd, err := d.getFd(dest.Network)
 		if err != nil {
@@ -243,7 +243,7 @@ func (d *ProtectedDialer) Dial(ctx context.Context,
 		}
 
 		curIP := d.vServer.currentIP()
-		conn, err := d.fdConn(ctx, curIP, d.vServer.Port, dest.Network, fd)
+		conn, err := d.fdConn(ctx, curIP, d.vServer.Port, fd)
 		if err != nil {
 			d.vServer.NextIP()
 			return nil, err
@@ -253,7 +253,7 @@ func (d *ProtectedDialer) Dial(ctx context.Context,
 	}
 
 	// v2ray connecting to "domestic" servers, no caching results
-	// log.Printf("Not Using Prepared: %s,%s", network, Address)
+	log.Printf("Not Using Prepared: %s,%s", network, Address)
 	resolved, err := d.lookupAddr(Address)
 	if err != nil {
 		return nil, err
@@ -266,11 +266,7 @@ func (d *ProtectedDialer) Dial(ctx context.Context,
 
 	// use the first resolved address.
 	// the result IP may vary, eg: IPv6 addrs comes first if client has ipv6 address
-	return d.fdConn(ctx, resolved.IPs[0], resolved.Port, dest.Network, fd)
-}
-
-func (d *ProtectedDialer) DestIpAddress() net.IP {
- 	return d.vServer.currentIP()
+	return d.fdConn(ctx, resolved.IPs[0], resolved.Port, fd)
 }
 
 func (d *ProtectedDialer) fdConn(ctx context.Context, ip net.IP, port int, fd int) (net.Conn, error) {
@@ -288,16 +284,9 @@ func (d *ProtectedDialer) fdConn(ctx context.Context, ip net.IP, port int, fd in
 	}
 	copy(sa.Addr[:], ip.To16())
 
-	if network == v2net.Network_UDP {
-		if err := unix.Bind(fd, &unix.SockaddrInet6{}); err != nil {
-			log.Printf("fdConn unix.Bind err, Close Fd: %d Err: %v", fd, err)
-			return nil, err
-		}
-	} else {
-		if err := unix.Connect(fd, sa); err != nil {
-			// log.Printf("fdConn unix.Connect err, Close Fd: %d Err: %v", fd, err)
-			return nil, err
-		}
+	if err := unix.Connect(fd, sa); err != nil {
+		log.Printf("fdConn unix.Connect err, Close Fd: %d Err: %v", fd, err)
+		return nil, err
 	}
 
 	file := os.NewFile(uintptr(fd), "Socket")
@@ -308,26 +297,10 @@ func (d *ProtectedDialer) fdConn(ctx context.Context, ip net.IP, port int, fd in
 
 	defer file.Close()
 	//Closing conn does not affect file, and closing file does not affect conn.
-	if network == v2net.Network_UDP {
-		packetConn, err := net.FilePacketConn(file)
-		if err != nil {
-			log.Printf("fdConn FilePacketConn Close Fd: %d Err: %v", fd, err)
-			return nil, err
-		}
-		return &v2internet.PacketConnWrapper{
-			Conn: packetConn,
-			Dest: &net.UDPAddr{
-				IP:   ip,
-				Port: port,
-			},
-		}, nil
-	} else {
-		conn, err := net.FileConn(file)
-		if err != nil {
-			log.Printf("fdConn FileConn Close Fd: %d Err: %v", fd, err)
-			return nil, err
-		}
-		return conn, nil
+	conn, err := net.FileConn(file)
+	if err != nil {
+		log.Printf("fdConn FileConn Close Fd: %d Err: %v", fd, err)
+		return nil, err
 	}
 
 	return conn, nil
