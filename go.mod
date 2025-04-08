@@ -1,10 +1,9 @@
 module github.com/2dust/AndroidLibV2rayLite
 
-go 1.24.1
+go 1.24.2
 
 require (
 	github.com/v2fly/v2ray-core/v5 v5.29.3
-        github.com/xtls/xray-core v1.250306.0
 	golang.org/x/mobile v0.0.0-20250305212854-3a7bc9f8a4de
 	golang.org/x/sys v0.31.0
 )

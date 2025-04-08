@@ -19,7 +19,6 @@ import (
 	v2core "github.com/v2fly/v2ray-core/v5"
 	v2net "github.com/v2fly/v2ray-core/v5/common/net"
 	v2filesystem "github.com/v2fly/v2ray-core/v5/common/platform/filesystem"
-	"github.com/xtls/xray-core/common/serial"
 	v2stats "github.com/v2fly/v2ray-core/v5/features/stats"
 	v2serial "github.com/v2fly/v2ray-core/v5/infra/conf/serial"
 	_ "github.com/v2fly/v2ray-core/v5/main/distro/all"
@@ -184,15 +183,12 @@ func (v *V2RayPoint) MeasureDelay(url string) (int64, error) {
 }
 
 // InitV2Env set v2 asset path
-func InitV2Env(envPath string, key string) {
+func InitV2Env(envPath string) {
 	//Initialize asset API, Since Raymond Will not let notify the asset location inside Process,
 	//We need to set location outside V2Ray
 	if len(envPath) > 0 {
 		os.Setenv(v2Asset, envPath)
 	}
-        if len(key) > 0 {
- 		os.Setenv(xudpBaseKey, key)
- 	}
 	
 	//Now we handle read, fallback to gomobile asset (apk assets)
 	v2filesystem.NewFileReader = func(path string) (io.ReadCloser, error) {
