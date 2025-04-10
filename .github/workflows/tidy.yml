@@ -53,13 +53,13 @@ jobs:
         with:
           go-version: 'stable'
 
-      - name: Update and commit changes
+      - name: dependencies excluding gvisor
         if: env.needs_update == 'true'
         run: |
           # Lock gvisor version to a specific revision
           go mod edit -replace=gvisor.dev/gvisor=gvisor.dev/gvisor@v0.0.0-20231020174304-b8a429915ff1
           # Lock grpc version to a specific revision
-          go mod edit -replace=google.golang.org/grpc@v1.71.1
+          go mod edit -replace=google.golang.org/grpc=google.golang.org/grpc@v1.71.1
           # Update all other dependencies
           go get github.com/v2fly/v2ray-core/v5@${{ env.LATEST_TAG_NAME }}
           go get -u
