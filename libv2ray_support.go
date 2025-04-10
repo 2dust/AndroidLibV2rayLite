@@ -314,7 +314,7 @@ func (d *ProtectedDialer) fdConn(ctx context.Context, ip net.IP, port int, netwo
 			log.Printf("fdConn FilePacketConn Close Fd: %d Err: %v", fd, err)
 			return nil, err
 		}
-		return &v2internet.PacketConnWrapper{
+		return &PacketConnWrapper{
 			Conn: packetConn,
 			Dest: &net.UDPAddr{
 				IP:   ip,
@@ -331,4 +331,50 @@ func (d *ProtectedDialer) fdConn(ctx context.Context, ip net.IP, port int, netwo
 	}
 
 	return conn, nil
+}
+
+type PacketConnWrapper struct {
+	Conn net.PacketConn
+	Dest net.Addr
+}
+
+func (c *PacketConnWrapper) Close() error {
+	return c.Conn.Close()
+}
+
+func (c *PacketConnWrapper) LocalAddr() net.Addr {
+	return c.Conn.LocalAddr()
+}
+
+func (c *PacketConnWrapper) RemoteAddr() net.Addr {
+	return c.Dest
+}
+
+func (c *PacketConnWrapper) Write(p []byte) (int, error) {
+	return c.Conn.WriteTo(p, c.Dest)
+}
+
+func (c *PacketConnWrapper) Read(p []byte) (int, error) {
+	n, _, err := c.Conn.ReadFrom(p)
+	return n, err
+}
+
+func (c *PacketConnWrapper) WriteTo(p []byte, d net.Addr) (int, error) {
+	return c.Conn.WriteTo(p, d)
+}
+
+func (c *PacketConnWrapper) ReadFrom(p []byte) (int, net.Addr, error) {
+	return c.Conn.ReadFrom(p)
+}
+
+func (c *PacketConnWrapper) SetDeadline(t time.Time) error {
+	return c.Conn.SetDeadline(t)
+}
+
+func (c *PacketConnWrapper) SetReadDeadline(t time.Time) error {
+	return c.Conn.SetReadDeadline(t)
+}
+
+func (c *PacketConnWrapper) SetWriteDeadline(t time.Time) error {
+	return c.Conn.SetWriteDeadline(t)
 }
