@@ -61,7 +61,7 @@ jobs:
           # Lock grpc version to a specific revision
           go mod edit -replace=google.golang.org/grpc@v1.71.1
           # Update all other dependencies
-          go get github.com/v2fly/v2ray-core/v5{{ env.LATEST_TAG_SHA
+          go get github.com/v2fly/v2ray-core/v5@${{ env.LATEST_TAG_NAME }}
           go get -u
           go get gvisor.dev/gvisor@go
           go mod tidy -v
