@@ -53,7 +53,7 @@ jobs:
         with:
           go-version: 'stable'
 
-      - name: Update dependencies excluding gvisor
+      - name: Update dependencies excluding gvisor and grpc
         if: env.needs_update == 'true'
         run: |
           # Lock gvisor version to a specific revision
