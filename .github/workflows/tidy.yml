@@ -58,7 +58,7 @@ jobs:
         run: |
           go get github.com/v2fly/v2ray-core/v5@${{ env.LATEST_TAG_SHA }}
           go get -u
-          go get gvisor.dev/gvisor@go
+          gvisor.dev/gvisor v0.0.0-20231020174304-b8a429915ff1
           go mod tidy -v
           git diff
 
