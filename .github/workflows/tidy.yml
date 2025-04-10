@@ -57,7 +57,7 @@ jobs:
         if: env.needs_update == 'true'
         run: |
           # Lock grpc version to a specific revision
-          go mod edit -replace=google.golang.org/grpc@v1.71.0
+          go mod edit -replace=google.golang.org/grpc@v1.71.1
           # Update all other dependencies
           go get -u
           go get gvisor.dev/gvisor@go
