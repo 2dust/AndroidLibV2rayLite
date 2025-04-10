@@ -56,7 +56,7 @@ jobs:
       - name: Update and commit changes
         if: env.needs_update == 'true'
         run: |
-          go get github.com/v2fly/v2ray-core@${{ env.LATEST_TAG_SHA }}
+          go get github.com/v2fly/v2ray-core/v5@${{ env.LATEST_TAG_SHA }}
           go get -u
           go get gvisor.dev/gvisor@go
           go mod tidy -v
