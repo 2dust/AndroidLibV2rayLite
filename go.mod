@@ -79,14 +79,10 @@ require (
 	golang.org/x/time v0.11.0 // indirect
 	golang.org/x/tools v0.32.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250409194420-de1ac958c67a // indirect
-	google.golang.org/grpc v1.71.1 // indirect
+	google.golang.org/grpc v1.66.3 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gvisor.dev/gvisor v0.0.0-20250409235806-3b2cca27c7e6 // indirect
+	gvisor.dev/gvisor v0.0.0-20231020174304-b8a429915ff1 // indirect
 	lukechampine.com/blake3 v1.4.0 // indirect
 	nhooyr.io/websocket v1.8.17 // indirect
 )
-
-replace google.golang.org/grpc v1.71.1 => google.golang.org/grpc v1.66.3
-
-replace gvisor.dev/gvisor => gvisor.dev/gvisor v0.0.0-20231020174304-b8a429915ff1
