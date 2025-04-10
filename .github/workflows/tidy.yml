@@ -63,7 +63,7 @@ jobs:
           go mod edit -replace=google.golang.org/grpc=google.golang.org/grpc@v1.63.3
 
           # Update specific dependency
-          go get github.com/v2fly/v2ray-core/v5@${{ env.LATEST_TAG_NAME }}
+          go get github.com/v2fly/v2ray-core/v5{{ env.LATEST_TAG_NAME }}
 
           # Update all other dependencies
           go get -u
