@@ -87,6 +87,6 @@ require (
 	nhooyr.io/websocket v1.8.17 // indirect
 )
 
-replace google.golang.org/grpc v1.71.0 => google.golang.org/grpc v1.66.3
+replace google.golang.org/grpc v1.71.1 => google.golang.org/grpc v1.66.3
 
 replace gvisor.dev/gvisor => gvisor.dev/gvisor v0.0.0-20240320123526-dc6abceb7ff0
