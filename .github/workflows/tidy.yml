@@ -28,7 +28,7 @@ jobs:
       - name: Fetch current repository release tag
         id: fetch-current-tag
         run: |
-          CURRENT_TAG_NAME=$(git describe --tags --abbrev=0)
+          CURRENT_TAG_NAME=$(git describe --tags --always --abbrev=0)
           echo "Current tag in this repo: $CURRENT_TAG_NAME"
           echo "CURRENT_TAG_NAME=$CURRENT_TAG_NAME" >> $GITHUB_ENV
 
