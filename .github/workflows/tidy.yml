@@ -20,7 +20,7 @@ jobs:
           EXTERNAL_REPO="v2fly/v2ray-core"
           LATEST_TAG=$(curl -s https://api.github.com/repos/$EXTERNAL_REPO/tags | jq -r '.[0]')
           LATEST_TAG_NAME=$(echo $LATEST_TAG | jq -r .name)
-          LATEST_TAG_SHA=$(echo $LATEST_TAG | jq -r .commit.sha)ترتیب 
+          LATEST_TAG_SHA=$(echo $LATEST_TAG | jq -r .commit.sha)
           echo "Latest tag from external repo: $LATEST_TAG_NAME"
           echo "LATEST_TAG_NAME=$LATEST_TAG_NAME" >> $GITHUB_ENV
           echo "LATEST_TAG_SHA=$LATEST_TAG_SHA" >> $GITHUB_ENV
