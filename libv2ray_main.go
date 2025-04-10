@@ -215,14 +215,8 @@ func MeasureOutboundDelay(ConfigureFileContent string, url string) (int64, error
 	// don't listen to anything for test purpose
 	config.Inbound = nil
 	config.Transport = nil
-	// config.App: (fakedns), log, dispatcher, InboundConfig, OutboundConfig, (stats), router, dns, (policy)
-	var essentialApp []*serial.TypedMessage
- 	for _, app := range config.App {
- 		if app.Type == "xray.app.proxyman.OutboundConfig" || app.Type == "xray.app.dispatcher.Config" || app.Type == "xray.app.log.Config" {
- 			essentialApp = append(essentialApp, app)
- 		}
- 	}
- 	config.App = essentialApp
+	// keep only basic features
+	config.App = config.App[:4]
 
 	inst, err := v2core.New(config)
 	if err != nil {
