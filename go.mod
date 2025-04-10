@@ -86,3 +86,5 @@ require (
 	lukechampine.com/blake3 v1.4.0 // indirect
 	nhooyr.io/websocket v1.8.17 // indirect
 )
+
+replace google.golang.org/grpc v1.71.0 => google.golang.org/grpc v1.66.3
