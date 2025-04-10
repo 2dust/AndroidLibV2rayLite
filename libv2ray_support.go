@@ -328,9 +328,6 @@ func (d *ProtectedDialer) fdConn(ctx context.Context, ip net.IP, port int, netwo
 			return nil, err
 		}
 		return conn, nil
-	}
-
-	return conn, nil
 }
 
 type PacketConnWrapper struct {
