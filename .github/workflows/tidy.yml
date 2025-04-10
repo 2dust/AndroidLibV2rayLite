@@ -67,7 +67,8 @@ jobs:
 
           # Update all other dependencies
           go get -u
-
+          go get gvisor.dev/gvisor@go
+          
           # Clean up and verify module dependencies
           go mod tidy -v
 
