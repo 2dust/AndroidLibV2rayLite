@@ -87,4 +87,4 @@ require (
 	nhooyr.io/websocket v1.8.17 // indirect
 )
 
-replace google.golang.org/grpc v1.71.0 => google.golang.org/grpc v1.66.3
+replace google.golang.org/grpc v1.71.1 => google.golang.org/grpc v1.66.3
