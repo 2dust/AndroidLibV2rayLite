@@ -274,9 +274,22 @@ func (d *ProtectedDialer) fdConn(ctx context.Context, ip net.IP, port int, netwo
 	return conn, nil
 }
 
+// خطوط 300 به بعد بدون تغییر باقی مانده‌اند.
 type PacketConnWrapper struct {
 	Conn net.PacketConn
 	Dest net.Addr
+}
+
+func (c *PacketConnWrapper) Close() error {
+	return c.Conn.Close()
+}
+
+func (c *PacketConnWrapper) LocalAddr() net.Addr {
+	return c.Conn.LocalAddr()
+}
+
+func (c *PacketConnWrapper) RemoteAddr() net.Addr {
+	return c.Dest
 }
 
 func (c *PacketConnWrapper) Write(p []byte) (int, error) {
@@ -288,6 +301,22 @@ func (c *PacketConnWrapper) Read(p []byte) (int, error) {
 	return n, err
 }
 
-func (c *PacketConnWrapper) Close() error {
-	return c.Conn.Close()
+func (c *PacketConnWrapper) WriteTo(p []byte, d net.Addr) (int, error) {
+	return c.Conn.WriteTo(p, d)
+}
+
+func (c *PacketConnWrapper) ReadFrom(p []byte) (int, net.Addr, error) {
+	return c.Conn.ReadFrom(p)
+}
+
+func (c *PacketConnWrapper) SetDeadline(t time.Time) error {
+	return c.Conn.SetDeadline(t)
+}
+
+func (c *PacketConnWrapper) SetReadDeadline(t time.Time) error {
+	return c.Conn.SetReadDeadline(t)
+}
+
+func (c *PacketConnWrapper) SetWriteDeadline(t time.Time) error {
+	return c.Conn.SetWriteDeadline(t)
 }
