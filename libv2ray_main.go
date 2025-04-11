@@ -66,10 +66,9 @@ type V2RayVPNServiceSupportsSet interface {
 func (v *V2RayPoint) RunLoop(prefIPv6 bool) (err error) {
 	v.v2rayOP.Lock()
 	defer v.v2rayOP.Unlock()
-	//Construct Context
 
 	if v.IsRunning {
-		return
+		return nil
 	}
 
 	v.closeChan = make(chan struct{})
@@ -88,15 +87,14 @@ func (v *V2RayPoint) RunLoop(prefIPv6 bool) (err error) {
 		prepareDomain()
 	}
 
-	err = v.pointloop()
-	return
+	return v.pointloop()
 }
 
 func (v *V2RayPoint) handleResolve() {
 	select {
 	case <-v.dialer.ResolveChan():
 		if !v.dialer.IsVServerReady() {
-			log.Println("vServer cannot resolved, shutdown")
+			log.Println("vServer cannot resolved, shutting down")
 			v.StopLoop()
 			v.SupportSet.Shutdown()
 		}
@@ -114,7 +112,7 @@ func (v *V2RayPoint) StopLoop() (err error) {
 		v.shutdownInit()
 		v.SupportSet.OnEmitStatus(0, "Closed")
 	}
-	return
+	return nil
 }
 
 // Delegate Function
@@ -140,24 +138,24 @@ func (v *V2RayPoint) pointloop() error {
 	log.Println("loading v2ray config")
 	config, err := v2serial.LoadJSONConfig(strings.NewReader(v.ConfigureFileContent))
 	if err != nil {
-		log.Println(err)
+		log.Println("Error loading config:", err)
 		return err
 	}
 
-	log.Println("new v2ray core")
+	log.Println("initializing new v2ray core instance")
 	v.Vpoint, err = v2core.New(config)
 	if err != nil {
 		v.Vpoint = nil
-		log.Println(err)
+		log.Println("Error creating v2ray core:", err)
 		return err
 	}
 	v.statsManager = v.Vpoint.GetFeature(v2stats.ManagerType()).(v2stats.Manager)
 
-	log.Println("start v2ray core")
+	log.Println("starting v2ray core")
 	v.IsRunning = true
 	if err := v.Vpoint.Start(); err != nil {
 		v.IsRunning = false
-		log.Println(err)
+		log.Println("Error starting v2ray core:", err)
 		return err
 	}
 
@@ -173,7 +171,6 @@ func (v *V2RayPoint) MeasureDelay(url string) (int64, error) {
 	go func() {
 		select {
 		case <-v.closeChan:
-			// cancel request if close called during measure
 			cancel()
 		case <-ctx.Done():
 		}
@@ -184,13 +181,10 @@ func (v *V2RayPoint) MeasureDelay(url string) (int64, error) {
 
 // InitV2Env set v2 asset path
 func InitV2Env(envPath string) {
-	//Initialize asset API, Since Raymond Will not let notify the asset location inside Process,
-	//We need to set location outside V2Ray
 	if len(envPath) > 0 {
 		os.Setenv(v2Asset, envPath)
 	}
-	
-	//Now we handle read, fallback to gomobile asset (apk assets)
+
 	v2filesystem.NewFileReader = func(path string) (io.ReadCloser, error) {
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			_, file := filepath.Split(path)
@@ -212,10 +206,8 @@ func MeasureOutboundDelay(ConfigureFileContent string, url string) (int64, error
 		return -1, err
 	}
 
-	// don't listen to anything for test purpose
 	config.Inbound = nil
 	config.Transport = nil
-	// keep only basic features
 	config.App = config.App[:4]
 
 	inst, err := v2core.New(config)
@@ -231,7 +223,6 @@ func MeasureOutboundDelay(ConfigureFileContent string, url string) (int64, error
 
 /*NewV2RayPoint new V2RayPoint*/
 func NewV2RayPoint(s V2RayVPNServiceSupportsSet, adns bool) *V2RayPoint {
-	// inject our own log writer
 	v2applog.RegisterHandlerCreator(v2applog.LogType_Console,
 		func(lt v2applog.LogType,
 			options v2applog.HandlerCreatorOptions) (v2commlog.Handler, error) {
@@ -258,7 +249,7 @@ func CheckVersionX() string {
 
 func measureInstDelay(ctx context.Context, inst *v2core.Instance, url string) (int64, error) {
 	if inst == nil {
-		return -1, errors.New("core instance nil")
+		return -1, errors.New("core instance is nil")
 	}
 
 	tr := &http.Transport{
@@ -287,10 +278,11 @@ func measureInstDelay(ctx context.Context, inst *v2core.Instance, url string) (i
 	if err != nil {
 		return -1, err
 	}
+	defer resp.Body.Close()
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
-		return -1, fmt.Errorf("status != 20x: %s", resp.Status)
+		return -1, fmt.Errorf("unexpected status code: %s", resp.Status)
 	}
-	resp.Body.Close()
 	return time.Since(start).Milliseconds(), nil
 }
 
