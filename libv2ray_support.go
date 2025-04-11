@@ -274,7 +274,6 @@ func (d *ProtectedDialer) fdConn(ctx context.Context, ip net.IP, port int, netwo
 	return conn, nil
 }
 
-// خطوط 300 به بعد بدون تغییر باقی مانده‌اند.
 type PacketConnWrapper struct {
 	Conn net.PacketConn
 	Dest net.Addr
