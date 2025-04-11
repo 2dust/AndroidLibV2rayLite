@@ -29,7 +29,6 @@ type resolved struct {
 	lastSwitched time.Time
 }
 
-// NextIP switches to another resolved IP.
 func (r *resolved) NextIP() {
 	r.ipLock.Lock()
 	defer r.ipLock.Unlock()
@@ -42,13 +41,11 @@ func (r *resolved) NextIP() {
 		}
 		r.lastSwitched = now
 		r.ipIdx++
+		if r.ipIdx >= uint8(len(r.IPs)) {
+			r.ipIdx = 0
+		}
+		log.Printf("Switched to next IP: %v", r.IPs[r.ipIdx])
 	}
-
-	if r.ipIdx >= uint8(len(r.IPs)) {
-		r.ipIdx = 0
-	}
-
-	log.Printf("Switched to next IP: %v", r.IPs[r.ipIdx])
 }
 
 func (r *resolved) currentIP() net.IP {
@@ -60,7 +57,6 @@ func (r *resolved) currentIP() net.IP {
 	return nil
 }
 
-// NewProtectedDialer creates a new ProtectedDialer instance.
 func NewProtectedDialer(p protectSet) *ProtectedDialer {
 	return &ProtectedDialer{
 		resolver:   &net.Resolver{PreferGo: false},
@@ -68,7 +64,6 @@ func NewProtectedDialer(p protectSet) *ProtectedDialer {
 	}
 }
 
-// ProtectedDialer handles protected dialing.
 type ProtectedDialer struct {
 	currentServer string
 	resolveChan   chan struct{}
@@ -92,7 +87,6 @@ func (d *ProtectedDialer) ResolveChan() chan struct{} {
 	return d.resolveChan
 }
 
-// lookupAddr resolves a domain name into IP addresses.
 func (d *ProtectedDialer) lookupAddr(addr string) (*resolved, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -114,24 +108,12 @@ func (d *ProtectedDialer) lookupAddr(addr string) (*resolved, error) {
 		return nil, fmt.Errorf("failed to resolve domain %s: %v", addr, err)
 	}
 
-	IPs := make([]net.IP, 0)
-	if d.preferIPv6 {
-		for _, ia := range addrs {
-			if ia.IP.To4() == nil {
-				IPs = append(IPs, ia.IP)
-			}
-		}
-	}
+	IPs := []net.IP{}
 	for _, ia := range addrs {
-		if ia.IP.To4() != nil {
+		if d.preferIPv6 && ia.IP.To4() == nil {
 			IPs = append(IPs, ia.IP)
-		}
-	}
-	if !d.preferIPv6 {
-		for _, ia := range addrs {
-			if ia.IP.To4() == nil {
-				IPs = append(IPs, ia.IP)
-			}
+		} else if !d.preferIPv6 && ia.IP.To4() != nil {
+			IPs = append(IPs, ia.IP)
 		}
 	}
 
@@ -143,19 +125,13 @@ func (d *ProtectedDialer) lookupAddr(addr string) (*resolved, error) {
 	}, nil
 }
 
-// PrepareDomain resolves and caches a domain.
 func (d *ProtectedDialer) PrepareDomain(domainName string, closeCh <-chan struct{}, prefIPv6 bool) {
 	log.Printf("Preparing Domain: %s", domainName)
 	d.currentServer = domainName
 	d.preferIPv6 = prefIPv6
 
 	maxRetry := 10
-	for {
-		if maxRetry == 0 {
-			log.Println("Max retries reached for PrepareDomain")
-			return
-		}
-
+	for maxRetry > 0 {
 		resolved, err := d.lookupAddr(domainName)
 		if err != nil {
 			maxRetry--
@@ -168,30 +144,25 @@ func (d *ProtectedDialer) PrepareDomain(domainName string, closeCh <-chan struct
 			}
 			continue
 		}
-
 		d.vServer = resolved
-		log.Printf("Resolved Domain: %s, Port: %d, IPs: %v",
-			resolved.domain, resolved.Port, resolved.IPs)
+		log.Printf("Resolved Domain: %s, Port: %d, IPs: %v", resolved.domain, resolved.Port, resolved.IPs)
 		return
 	}
 }
 
-func (d *ProtectedDialer) getFd(network v2net.Network) (fd int, err error) {
+func (d *ProtectedDialer) getFd(network v2net.Network) (int, error) {
 	switch network {
 	case v2net.Network_TCP:
-		fd, err = unix.Socket(unix.AF_INET6, unix.SOCK_STREAM, unix.IPPROTO_TCP)
+		return unix.Socket(unix.AF_INET6, unix.SOCK_STREAM, unix.IPPROTO_TCP)
 	case v2net.Network_UDP:
-		fd, err = unix.Socket(unix.AF_INET6, unix.SOCK_DGRAM, unix.IPPROTO_UDP)
+		return unix.Socket(unix.AF_INET6, unix.SOCK_DGRAM, unix.IPPROTO_UDP)
 	default:
-		err = errors.New("unknown network")
+		return 0, errors.New("unknown network")
 	}
-	return
 }
 
-// Dial establishes a connection to the destination.
 func (d *ProtectedDialer) Dial(ctx context.Context, src v2net.Address, dest v2net.Destination, sockopt *v2internet.SocketConfig) (net.Conn, error) {
 	Address := dest.NetAddr()
-
 	if Address == d.currentServer {
 		if d.vServer == nil {
 			log.Println("Dial pending prepare...")
@@ -267,11 +238,7 @@ func (d *ProtectedDialer) fdConn(ctx context.Context, ip net.IP, port int, netwo
 		}, nil
 	}
 
-	conn, err := net.FileConn(file)
-	if err != nil {
-		return nil, err
-	}
-	return conn, nil
+	return net.FileConn(file)
 }
 
 type PacketConnWrapper struct {
@@ -298,14 +265,6 @@ func (c *PacketConnWrapper) Write(p []byte) (int, error) {
 func (c *PacketConnWrapper) Read(p []byte) (int, error) {
 	n, _, err := c.Conn.ReadFrom(p)
 	return n, err
-}
-
-func (c *PacketConnWrapper) WriteTo(p []byte, d net.Addr) (int, error) {
-	return c.Conn.WriteTo(p, d)
-}
-
-func (c *PacketConnWrapper) ReadFrom(p []byte) (int, net.Addr, error) {
-	return c.Conn.ReadFrom(p)
 }
 
 func (c *PacketConnWrapper) SetDeadline(t time.Time) error {
