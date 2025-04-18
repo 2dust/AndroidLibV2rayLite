@@ -1,18 +1,12 @@
-name: Build
+name: Build and release AndroidLibV2rayLite
 
 on:
   workflow_dispatch:
-    inputs:
-      release_tag:
-        required: false
-        description: 'Release tag something like v5.29.3'
-        type: string
-  pull_request:
-    branches:
-      - master
+  release:
+    types: [published]
   push:
-    branches:
-      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -54,10 +48,19 @@ jobs:
          go mod tidy
          gomobile bind -v -androidapi 21 -trimpath -ldflags='-s -w -buildid=' ./
 
-    - name: Upload AndroidLibV2rayLite to release
-      if: github.event.inputs.release_tag != ''
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4.6.2
+      with:
+        name: libv2ray
+        path: |
+          ${{ github.workspace }}/libv2ray*r
+
+    - name: Upload AndroidLibXrayLite to release
+      if: github.event_name == 'release' && github.event.action == 'published'
       uses: svenstaro/upload-release-action@v2
       with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: ./libv2ray*r
-        tag: ${{ github.event.inputs.release_tag }}
+        tag: ${{ github.ref }}
+        file_glob: truent.inputs.release_tag }}
         file_glob: true
