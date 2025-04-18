@@ -62,5 +62,4 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: ./libv2ray*r
         tag: ${{ github.ref }}
-        file_glob: truent.inputs.release_tag }}
         file_glob: true
