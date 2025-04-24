@@ -10,9 +10,9 @@ import (
 	"sync"
 	"time"
 
-	"golang.org/x/sys/unix"
 	v2net "github.com/v2fly/v2ray-core/v5/common/net"
 	v2internet "github.com/v2fly/v2ray-core/v5/transport/internet"
+	"golang.org/x/sys/unix"
 )
 
 type protectSet interface {
@@ -136,24 +136,24 @@ func (d *ProtectedDialer) lookupAddr(addr string) (*resolved, error) {
 	IPs := make([]net.IP, 0)
 	//ipv6 is prefer, append ipv6 then ipv4
 	//ipv6 is not prefer, append ipv4 then ipv6
-	if(d.preferIPv6) {
+	if d.preferIPv6 {
 		for _, ia := range addrs {
-			if(ia.IP.To4() == nil) {
-				IPs = append(IPs, ia.IP)			 
+			if ia.IP.To4() == nil {
+				IPs = append(IPs, ia.IP)
 			}
-		}		
-	}
-	for _, ia := range addrs {
-		if(ia.IP.To4() != nil) {
-			IPs = append(IPs, ia.IP)	
 		}
 	}
-	if(!d.preferIPv6) {
+	for _, ia := range addrs {
+		if ia.IP.To4() != nil {
+			IPs = append(IPs, ia.IP)
+		}
+	}
+	if !d.preferIPv6 {
 		for _, ia := range addrs {
-			if(ia.IP.To4() == nil) {
-				IPs = append(IPs, ia.IP)			 
+			if ia.IP.To4() == nil {
+				IPs = append(IPs, ia.IP)
 			}
-		}		
+		}
 	}
 
 	rs := &resolved{
@@ -270,7 +270,7 @@ func (d *ProtectedDialer) Dial(ctx context.Context,
 }
 
 func (d *ProtectedDialer) DestIpAddress() net.IP {
- 	return d.vServer.currentIP()
+	return d.vServer.currentIP()
 }
 
 func (d *ProtectedDialer) fdConn(ctx context.Context, ip net.IP, port int, network v2net.Network, fd int) (net.Conn, error) {

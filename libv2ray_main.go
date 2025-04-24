@@ -189,7 +189,7 @@ func InitV2Env(envPath string) {
 	if len(envPath) > 0 {
 		os.Setenv(v2Asset, envPath)
 	}
-	
+
 	//Now we handle read, fallback to gomobile asset (apk assets)
 	v2filesystem.NewFileReader = func(path string) (io.ReadCloser, error) {
 		if _, err := os.Stat(path); os.IsNotExist(err) {
