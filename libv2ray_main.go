@@ -52,15 +52,20 @@ type consoleLogWriter struct {
 	logger *log.Logger // Standard logger
 }
 
+// setEnvVariable safely sets an environment variable and logs any errors encountered.
+func setEnvVariable(key, value string) {
+	if err := os.Setenv(key, value); err != nil {
+		log.Printf("Failed to set environment variable %s: %v. Please check your configuration.", key, err)
+	}
+}
+
 // InitCoreEnv initializes environment variables and file system handlers for the core
 // It sets up asset path, certificate path, XUDP base key and customizes the file reader
 // to support Android asset system
 func InitCoreEnv(envPath string, key string) {
 	// Set asset/cert paths
 	if len(envPath) > 0 {
-		if err := os.Setenv(coreAsset, envPath); err != nil {
-			log.Printf("Failed to set environment variable %s: %v", coreAsset, err)
-		}
+		setEnvVariable(coreAsset, envPath)
 	}
 
 	// Custom file reader with path validation
@@ -71,8 +76,8 @@ func InitCoreEnv(envPath string, key string) {
 		fullPath := filepath.Join(baseDir, cleanPath)
 
 		// Prevent directory traversal
-		if baseDir != "" && !strings.HasPrefix(fullPath, baseDir) {
-			return nil, fmt.Errorf("unauthorized path access: %s", path)
+		if baseDir != "" && !strings.HasPrefix(fullPath, filepath.Clean(baseDir)) {
+			return nil, fmt.Errorf("unauthorized access attempt: %s", path)
 		}
 
 		// Check file existence
