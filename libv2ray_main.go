@@ -70,7 +70,7 @@ func InitCoreEnv(envPath string, key string) {
 
 	// Custom file reader with path validation
 	corefilesystem.NewFileReader = func(path string) (io.ReadCloser, error) {
-                if _, err := os.Stat(path); os.IsNotExist(err) {
+		if _, err := os.Stat(path); os.IsNotExist(err) {
 			_, file := filepath.Split(path)
 			return mobasset.Open(file)
 		}
