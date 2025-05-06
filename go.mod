@@ -88,5 +88,3 @@ require (
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.66.3
-
-replace gvisor.dev/gvisor => gvisor.dev/gvisor v0.0.0-20231020174304-b8a429915ff1
