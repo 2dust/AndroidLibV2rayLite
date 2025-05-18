@@ -1,10 +1,10 @@
 module github.com/2dust/AndroidLibV2rayLite
 
-go 1.24.2
+go 1.24.3
 
 require (
-	github.com/v2fly/v2ray-core/v5 v5.31.0
-	golang.org/x/mobile v0.0.0-20250408133729-978277e7eaf7
+	github.com/v2fly/v2ray-core/v5 v5.32.0
+	golang.org/x/mobile v0.0.0-20250506005352-78cd7a343bde
 )
 
 require github.com/pion/transport/v3 v3.0.7 // indirect
@@ -27,7 +27,7 @@ require (
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/btree v1.1.3 // indirect
 	github.com/google/gopacket v1.1.19 // indirect
-	github.com/google/pprof v0.0.0-20250423184734-337e5dd93bb4 // indirect
+	github.com/google/pprof v0.0.0-20250501235452-c0086092b71a // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/jhump/protoreflect v1.17.0 // indirect
@@ -35,7 +35,7 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.10 // indirect
 	github.com/klauspost/reedsolomon v1.12.4 // indirect
 	github.com/lunixbochs/struc v0.0.0-20241101090106-8d528fa2c543 // indirect
-	github.com/miekg/dns v1.1.65 // indirect
+	github.com/miekg/dns v1.1.66 // indirect
 	github.com/mustafaturan/bus v1.0.2 // indirect
 	github.com/mustafaturan/monoton v1.0.0 // indirect
 	github.com/onsi/ginkgo/v2 v2.23.4 // indirect
@@ -46,11 +46,11 @@ require (
 	github.com/pion/randutil v0.1.0 // indirect
 	github.com/pion/sctp v1.8.39 // indirect
 	github.com/pion/transport/v2 v2.2.10 // indirect
-	github.com/pires/go-proxyproto v0.8.0 // indirect
+	github.com/pires/go-proxyproto v0.8.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.51.0 // indirect
-	github.com/refraction-networking/utls v1.7.1 // indirect
+	github.com/refraction-networking/utls v1.7.3 // indirect
 	github.com/riobard/go-bloom v0.0.0-20200614022211-cdc8013cb5b3 // indirect
 	github.com/rs/cors v1.11.1 // indirect
 	github.com/secure-io/siv-go v0.0.0-20180922214919-5ff40651e2c4 // indirect
@@ -69,21 +69,21 @@ require (
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/mock v0.5.2 // indirect
 	go4.org/netipx v0.0.0-20231129151722-fdeea329fbba // indirect
-	golang.org/x/crypto v0.37.0 // indirect
-	golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0 // indirect
+	golang.org/x/crypto v0.38.0 // indirect
+	golang.org/x/exp v0.0.0-20250506013437-ce4c2cf36ca6 // indirect
 	golang.org/x/mod v0.24.0 // indirect
-	golang.org/x/net v0.39.0 // indirect
-	golang.org/x/sync v0.13.0 // indirect
-	golang.org/x/sys v0.32.0 // indirect
-	golang.org/x/text v0.24.0 // indirect
+	golang.org/x/net v0.40.0 // indirect
+	golang.org/x/sync v0.14.0 // indirect
+	golang.org/x/sys v0.33.0 // indirect
+	golang.org/x/text v0.25.0 // indirect
 	golang.org/x/time v0.11.0 // indirect
-	golang.org/x/tools v0.32.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250428153025-10db94c68c34 // indirect
-	google.golang.org/grpc v1.72.0 // indirect
+	golang.org/x/tools v0.33.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250512202823-5a2f75b736a9 // indirect
+	google.golang.org/grpc v1.72.1 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gvisor.dev/gvisor v0.0.0-20250428193742-2d800c3129d5 // indirect
-	lukechampine.com/blake3 v1.4.0 // indirect
+	gvisor.dev/gvisor v0.0.0-20250517012954-f63734aabe5e // indirect
+	lukechampine.com/blake3 v1.4.1 // indirect
 	nhooyr.io/websocket v1.8.17 // indirect
 )
 
