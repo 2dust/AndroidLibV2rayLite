@@ -244,17 +244,27 @@ func measureInstDelay(ctx context.Context, inst *core.Instance, url string) (int
 	}
 
 	req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
+	cycle := 4
 	start := time.Now()
-	resp, err := client.Do(req)
-	if err != nil {
-		return -1, err
+	for i := 0; i < cycle; i++ {
+		resp, err := client.Do(req)
+		if err != nil {
+			return -1, err
+		}
+	    	defer resp.Body.Close()
+	
+		if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
+			return -1, fmt.Errorf("invalid status: %s", resp.Status)
+		}
+	
+		_, _ = io.Copy(io.Discard, resp.Body)
+		
+		// Exclude first test
+		if i == 0 {
+			start = time.Now()
+		}
 	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
-		return -1, fmt.Errorf("invalid status: %s", resp.Status)
-	}
-	return time.Since(start).Milliseconds(), nil
+	return time.Since(start).Milliseconds() / int64(cycle - 1), nil
 }
 
 // Log writer implementation
