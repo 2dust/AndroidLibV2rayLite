@@ -224,7 +224,7 @@ func measureInstDelay(ctx context.Context, inst *core.Instance, url string) (int
 
 	tr := &http.Transport{
 		TLSHandshakeTimeout: 6 * time.Second,
-		DisableKeepAlives:   true,
+		DisableKeepAlives:   false,
 		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
 			dest, err := corenet.ParseDestination(fmt.Sprintf("%s:%s", network, addr))
 			if err != nil {
@@ -243,38 +243,65 @@ func measureInstDelay(ctx context.Context, inst *core.Instance, url string) (int
 		url = "https://www.google.com/generate_204"
 	}
 
-	req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
-	
-    	var minDuration int64
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		return -1, fmt.Errorf("failed to create HTTP request: %w", err)
+	}
+
+	var minDuration int64 = -1
 	success := false
 	var lastErr error
-	
-	for i := 0; i < 2; i++ {
+
+	// Add exception handling and increase retry attempts
+	const attempts = 2
+	for i := 0; i < attempts; i++ {
+		select {
+		case <-ctx.Done():
+			// Return immediately when context is canceled
+			if !success {
+				return -1, ctx.Err()
+			}
+			return minDuration, nil
+		default:
+			// Continue execution
+		}
+
 		start := time.Now()
-	    	resp, err := client.Do(req)
+		resp, err := client.Do(req)
 		if err != nil {
 			lastErr = err
 			continue
 		}
-		
+
+		// Ensure response body is closed
+		defer func(resp *http.Response) {
+			if resp != nil && resp.Body != nil {
+				resp.Body.Close()
+			}
+		}(resp)
+
 		if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
 			lastErr = fmt.Errorf("invalid status: %s", resp.Status)
-			resp.Body.Close()
 			continue
 		}
-		_, _ = io.Copy(io.Discard, resp.Body)
-		resp.Body.Close()
-		
+
+		// Handle possible errors when reading response body
+		if _, err := io.Copy(io.Discard, resp.Body); err != nil {
+			lastErr = fmt.Errorf("failed to read response body: %w", err)
+			continue
+		}
+
 		duration := time.Since(start).Milliseconds()
 		if !success || duration < minDuration {
 			minDuration = duration
 		}
+
 		success = true
 	}
 	if !success {
 		return -1, lastErr
 	}
-	return minDuration, nil									
+	return minDuration, nil
 }
 
 // Log writer implementation
