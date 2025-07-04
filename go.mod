@@ -3,7 +3,7 @@ module github.com/2dust/AndroidLibV2rayLite
 go 1.24.3
 
 require (
-	github.com/v2fly/v2ray-core/v5 v5.35.0
+	github.com/v2fly/v2ray-core/v5 v5.36.0
 	golang.org/x/mobile v0.0.0-20250606033058-a2a15c67f36f
 )
 
@@ -65,7 +65,7 @@ require (
 	github.com/vincent-petithory/dataurl v1.0.0 // indirect
 	github.com/xiaokangwang/VLite v0.0.0-20231225174116-75fa4b06e9f2 // indirect
 	github.com/xtaci/smux v1.5.34 // indirect
-	go.starlark.net v0.0.0-20250623223156-8bf495bf4e9a // indirect
+	go.starlark.net v0.0.0-20250701195324-d457b4515e0e // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/mock v0.5.2 // indirect
 	go4.org/netipx v0.0.0-20231129151722-fdeea329fbba // indirect
