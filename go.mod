@@ -3,7 +3,7 @@ module github.com/2dust/AndroidLibV2rayLite
 go 1.25.1
 
 require (
-	github.com/v2fly/v2ray-core/v5 v5.44.0
+	github.com/v2fly/v2ray-core/v5 v5.44.1
 	golang.org/x/mobile v0.0.0-20260112195712-5b9ecdfb8721
 )
 
@@ -27,7 +27,7 @@ require (
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/btree v1.1.3 // indirect
 	github.com/google/gopacket v1.1.19 // indirect
-	github.com/google/pprof v0.0.0-20260111202518-71be6bfdd440 // indirect
+	github.com/google/pprof v0.0.0-20260115054156-294ebfa9ad83 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/jhump/protoreflect v1.17.0 // indirect
@@ -82,7 +82,7 @@ require (
 	google.golang.org/grpc v1.78.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gvisor.dev/gvisor v0.0.0-20260115000136-4966a9511158 // indirect
+	gvisor.dev/gvisor v0.0.0-20260115201132-a8b6e6a86515 // indirect
 	lukechampine.com/blake3 v1.4.1 // indirect
 	nhooyr.io/websocket v1.8.17 // indirect
 )
