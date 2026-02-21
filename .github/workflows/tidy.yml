@@ -53,33 +53,27 @@ jobs:
         with:
           go-version: 'stable'
 
-      - name: Update dependencies excluding gvisor and grpc
+      - name: Update and commit changes
         if: env.needs_update == 'true'
         run: |
-          # Lock gvisor version to a specific revision
-          go mod edit -replace=gvisor.dev/gvisor=gvisor.dev/gvisor@v0.0.0-20231020174304-b8a429915ff1
+          # Sync Go version from upstream go.mod
+          EXTERNAL_REPO="v2fly/v2ray-core"
+          GO_VERSION=$(curl -s https://raw.githubusercontent.com/$EXTERNAL_REPO/${{ env.LATEST_TAG_NAME }}/go.mod | awk '/^go / {print $2; exit}')
+          if [ -n "$GO_VERSION" ]; then
+            echo "Syncing Go version to $GO_VERSION"
+            go mod edit -go=$GO_VERSION
+          else
+            echo "Failed to detect Go version from upstream go.mod"
+          fi
 
-          # Lock qpack version to a specific revision
-          go mod edit -replace=github.com/quic-go/qpack=github.com/quic-go/qpack@v0.5.1
+          go get github.com/v2fly/v2ray-core/v5@${{ env.LATEST_TAG_SHA }}
 
-          # Lock quic-go version to a specific revision
-          go mod edit -replace=github.com/quic-go/quic-go=github.com/quic-go/quic-go@v0.56.0
-
-          # Lock grpc version to a specific revision
-          go mod edit -replace=google.golang.org/grpc=google.golang.org/grpc@v1.66.3
-
-          # Update specific dependency
-          go get github.com/v2fly/v2ray-core/v5@${{ env.LATEST_TAG_NAME }}
-
-          # Update all other dependencies
-          go get -u
-          go get gvisor.dev/gvisor@go
-          
           # Clean up and verify module dependencies
           go mod tidy -v
 
           # Show changes
           git diff
+
       - name: Commit and push changes
         id: auto-commit-action
         if: env.needs_update == 'true'
