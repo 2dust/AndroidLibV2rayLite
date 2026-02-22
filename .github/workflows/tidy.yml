@@ -66,7 +66,7 @@ jobs:
             echo "Failed to detect Go version from upstream go.mod"
           fi
 
-          go get github.com/v2fly/v2ray-core/v5@${{ env.LATEST_TAG_SHA }}
+          go get github.com/v2fly/v2ray-core/v5@${{ env.LATEST_TAG_NAME }}
 
           # Clean up and verify module dependencies
           go mod tidy -v
