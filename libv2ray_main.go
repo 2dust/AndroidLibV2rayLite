@@ -172,7 +172,7 @@ func MeasureOutboundDelay(ConfigureFileContent string, url string) (int64, error
 
 // CheckVersionX returns the library and v2fly versions
 func CheckVersionX() string {
-	var version = 35
+	var version = 32
 	return fmt.Sprintf("Lib v%d, V2fly-core v%s", version, core.Version())
 }
 
