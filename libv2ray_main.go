@@ -188,20 +188,40 @@ func (x *CoreController) doShutdown() {
 	x.xrayStatsManager = nil
 }
 
-// safeNewCore wraps core.New and recovers from expvar "Reuse of exported var name" panics
-// that occur when restarting the core in the same process lifetime.
+// safeNewCore wraps core.New and recovers from expvar "Reuse of exported var name" panics.
+// When expvar panics, core.New does not return an instance. We catch the panic,
+// then retry core.New — on retry the expvar names are already registered so no panic occurs.
 func safeNewCore(config *core.Config) (inst *core.Instance, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			panicStr := fmt.Sprintf("%v", r)
-			if strings.Contains(panicStr, "Reuse of exported var name") {
-				log.Printf("Recovered from expvar re-registration (safe to ignore on restart): %v", r)
-			} else {
-				err = fmt.Errorf("unexpected panic in core.New: %v", r)
+	panicked := false
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				panicStr := fmt.Sprintf("%v", r)
+				if strings.Contains(panicStr, "Reuse of exported var name") {
+					log.Printf("Recovered from expvar re-registration (safe on restart): %v", r)
+					panicked = true
+				} else {
+					err = fmt.Errorf("unexpected panic in core.New: %v", r)
+				}
 			}
-		}
+		}()
+		inst, err = core.New(config)
 	}()
-	inst, err = core.New(config)
+
+	// If expvar panicked, core.New was interrupted before returning.
+	// Retry: expvar names are now already registered, so no panic on second call.
+	if panicked && inst == nil && err == nil {
+		log.Println("Retrying core.New after expvar recovery...")
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					err = fmt.Errorf("panic on retry of core.New: %v", r)
+				}
+			}()
+			inst, err = core.New(config)
+		}()
+	}
+
 	return
 }
 
@@ -218,7 +238,7 @@ func (x *CoreController) doStartLoop(configContent string) error {
 		return fmt.Errorf("core initialization failed: %w", err)
 	}
 	if x.coreInstance == nil {
-		return fmt.Errorf("core initialization failed: instance is nil after expvar recovery")
+		return fmt.Errorf("core initialization failed: instance is nil")
 	}
 	x.xrayStatsManager = x.coreInstance.GetFeature(corestats.ManagerType()).(corestats.Manager)
 
@@ -272,18 +292,15 @@ func measureInstDelay(ctx context.Context, inst *core.Instance, url string) (int
 	success := false
 	var lastErr error
 
-	// Add exception handling and increase retry attempts
 	const attempts = 2
 	for i := 0; i < attempts; i++ {
 		select {
 		case <-ctx.Done():
-			// Return immediately when context is canceled
 			if !success {
 				return -1, ctx.Err()
 			}
 			return minDuration, nil
 		default:
-			// Continue execution
 		}
 
 		start := time.Now()
@@ -293,7 +310,6 @@ func measureInstDelay(ctx context.Context, inst *core.Instance, url string) (int
 			continue
 		}
 
-		// Ensure response body is closed
 		defer func(resp *http.Response) {
 			if resp != nil && resp.Body != nil {
 				resp.Body.Close()
@@ -305,7 +321,6 @@ func measureInstDelay(ctx context.Context, inst *core.Instance, url string) (int
 			continue
 		}
 
-		// Handle possible errors when reading response body
 		if _, err := io.Copy(io.Discard, resp.Body); err != nil {
 			lastErr = fmt.Errorf("failed to read response body: %w", err)
 			continue
