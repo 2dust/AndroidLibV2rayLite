@@ -14,14 +14,14 @@ import (
 	"sync"
 	"time"
 
-	core "github.com/v2fly/v2ray-core/v5"
-	coreapplog "github.com/v2fly/v2ray-core/v5/app/log"
-	corecommlog "github.com/v2fly/v2ray-core/v5/common/log"
-	corenet "github.com/v2fly/v2ray-core/v5/common/net"
-	corefilesystem "github.com/v2fly/v2ray-core/v5/common/platform/filesystem"
-	corestats "github.com/v2fly/v2ray-core/v5/features/stats"
-	coreserial "github.com/v2fly/v2ray-core/v5/infra/conf/serial"
-	_ "github.com/v2fly/v2ray-core/v5/main/distro/all"
+	core "github.com/xtls/xray-core/core"
+	coreapplog "github.com/xtls/xray-core/app/log"
+	corecommlog "github.com/xtls/xray-core/common/log"
+	corenet "github.com/xtls/xray-core/common/net"
+	corefilesystem "github.com/xtls/xray-core/common/platform/filesystem"
+	corestats "github.com/xtls/xray-core/features/stats"
+	coreserial "github.com/xtls/xray-core/infra/conf/serial"
+	_ "github.com/xtls/xray-core/main/distro/all"
 	mobasset "golang.org/x/mobile/asset"
 )
 
@@ -30,7 +30,7 @@ const (
 	coreAsset = "v2ray.location.asset"
 )
 
-// CoreController represents a controller for managing v2fly core instance lifecycle
+// CoreController represents a controller for managing xray core instance lifecycle
 type CoreController struct {
 	CallbackHandler CoreCallbackHandler
 	statsManager    corestats.Manager
@@ -97,7 +97,7 @@ func NewCoreController(s CoreCallbackHandler) *CoreController {
 }
 
 // StartLoop initializes and starts the core processing loop
-// Thread-safe method that configures and runs the v2fly core with the provided configuration
+// Thread-safe method that configures and runs the xray core with the provided configuration
 // Returns immediately if the core is already running
 func (x *CoreController) StartLoop(configContent string) (err error) {
 	x.coreMutex.Lock()
@@ -170,13 +170,13 @@ func MeasureOutboundDelay(ConfigureFileContent string, url string) (int64, error
 	return measureInstDelay(context.Background(), inst, url)
 }
 
-// CheckVersionX returns the library and v2fly versions
+// CheckVersionX returns the library and xray versions
 func CheckVersionX() string {
 	var version = 31
-	return fmt.Sprintf("Lib v%d, V2fly-core v%s", version, core.Version())
+	return fmt.Sprintf("Lib v%d, Xray-core v%s", version, core.Version())
 }
 
-// doShutdown shuts down the v2fly instance and cleans up resources
+// doShutdown shuts down the xray instance and cleans up resources
 func (x *CoreController) doShutdown() {
 	if x.coreInstance != nil {
 		if err := x.coreInstance.Close(); err != nil {
@@ -188,7 +188,7 @@ func (x *CoreController) doShutdown() {
 	x.statsManager = nil
 }
 
-// doStartLoop sets up and starts the v2fly core
+// doStartLoop sets up and starts the xray core
 func (x *CoreController) doStartLoop(configContent string) error {
 	log.Println("Initializing core...")
 	config, err := coreserial.LoadJSONConfig(strings.NewReader(configContent))
