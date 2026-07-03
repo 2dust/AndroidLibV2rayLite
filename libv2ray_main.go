@@ -32,11 +32,11 @@ const (
 
 // CoreController represents a controller for managing xray core instance lifecycle
 type CoreController struct {
-	CallbackHandler CoreCallbackHandler
-	statsManager    corestats.Manager
-	coreMutex       sync.Mutex
-	coreInstance    *core.Instance
-	IsRunning       bool
+	CallbackHandler  CoreCallbackHandler
+	xrayStatsManager corestats.Manager
+	coreMutex        sync.Mutex
+	coreInstance     *core.Instance
+	IsRunning        bool
 }
 
 // CoreCallbackHandler defines interface for receiving callbacks and notifications from the core service
@@ -128,10 +128,10 @@ func (x *CoreController) StopLoop() error {
 // Returns the accumulated traffic value and resets the counter to zero
 // Returns 0 if the stats manager is not initialized or the counter doesn't exist
 func (x *CoreController) QueryStats(tag string, direct string) int64 {
-	if x.statsManager == nil {
+	if x.xrayStatsManager == nil {
 		return 0
 	}
-	counter := x.statsManager.GetCounter(fmt.Sprintf("outbound>>>%s>>>traffic>>>%s", tag, direct))
+	counter := x.xrayStatsManager.GetCounter(fmt.Sprintf("outbound>>>%s>>>traffic>>>%s", tag, direct))
 	if counter == nil {
 		return 0
 	}
@@ -185,7 +185,7 @@ func (x *CoreController) doShutdown() {
 		x.coreInstance = nil
 	}
 	x.IsRunning = false
-	x.statsManager = nil
+	x.xrayStatsManager = nil
 }
 
 // doStartLoop sets up and starts the xray core
@@ -200,7 +200,7 @@ func (x *CoreController) doStartLoop(configContent string) error {
 	if err != nil {
 		return fmt.Errorf("core initialization failed: %w", err)
 	}
-	x.statsManager = x.coreInstance.GetFeature(corestats.ManagerType()).(corestats.Manager)
+	x.xrayStatsManager = x.coreInstance.GetFeature(corestats.ManagerType()).(corestats.Manager)
 
 	log.Println("Starting core...")
 	x.IsRunning = true
