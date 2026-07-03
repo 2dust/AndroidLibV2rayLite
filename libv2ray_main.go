@@ -158,7 +158,7 @@ func MeasureOutboundDelay(ConfigureFileContent string, url string) (int64, error
 	// Simplify config for testing
 	config.Inbound = nil
 
-	inst, err := core.New(config)
+	inst, err := safeNewCore(config)
 	if err != nil {
 		return -1, fmt.Errorf("Instance creation failed: %w", err)
 	}
@@ -188,6 +188,23 @@ func (x *CoreController) doShutdown() {
 	x.xrayStatsManager = nil
 }
 
+// safeNewCore wraps core.New and recovers from expvar "Reuse of exported var name" panics
+// that occur when restarting the core in the same process lifetime.
+func safeNewCore(config *core.Config) (inst *core.Instance, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			panicStr := fmt.Sprintf("%v", r)
+			if strings.Contains(panicStr, "Reuse of exported var name") {
+				log.Printf("Recovered from expvar re-registration (safe to ignore on restart): %v", r)
+			} else {
+				err = fmt.Errorf("unexpected panic in core.New: %v", r)
+			}
+		}
+	}()
+	inst, err = core.New(config)
+	return
+}
+
 // doStartLoop sets up and starts the xray core
 func (x *CoreController) doStartLoop(configContent string) error {
 	log.Println("Initializing core...")
@@ -196,9 +213,12 @@ func (x *CoreController) doStartLoop(configContent string) error {
 		return fmt.Errorf("configuration error: %w", err)
 	}
 
-	x.coreInstance, err = core.New(config)
+	x.coreInstance, err = safeNewCore(config)
 	if err != nil {
 		return fmt.Errorf("core initialization failed: %w", err)
+	}
+	if x.coreInstance == nil {
+		return fmt.Errorf("core initialization failed: instance is nil after expvar recovery")
 	}
 	x.xrayStatsManager = x.coreInstance.GetFeature(corestats.ManagerType()).(corestats.Manager)
 
