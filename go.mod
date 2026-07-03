@@ -8,3 +8,5 @@ require (
 )
 
 replace github.com/xtls/xray-core => ../Xray-core
+
+replace github.com/wlynxg/anet => github.com/wlynxg/anet v0.0.5
