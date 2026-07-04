@@ -117,10 +117,9 @@ type CoreCallbackHandler interface {
 	OnEmitStatus(int, string) int
 }
 
-// consoleLogWriter implements a log writer without datetime stamps
-// as Android system already adds timestamps to each log line
-type consoleLogWriter struct {
-	logger *log.Logger // Standard logger
+// callbackLogWriter routes xray core log messages to OnEmitStatus callback
+type callbackLogWriter struct {
+	handler CoreCallbackHandler
 }
 
 // setEnvVariable safely sets an environment variable and logs any errors encountered.
@@ -150,7 +149,7 @@ func NewCoreController(s CoreCallbackHandler) *CoreController {
 	if err := coreapplog.RegisterHandlerCreator(
 		coreapplog.LogType_Console,
 		func(lt coreapplog.LogType, options coreapplog.HandlerCreatorOptions) (corecommlog.Handler, error) {
-			return corecommlog.NewLogger(createStdoutLogWriter()), nil
+			return corecommlog.NewLogger(newCallbackLogWriterCreator(s)), nil
 		},
 	); err != nil {
 		log.Printf("Logger registration failed: %v", err)
@@ -359,21 +358,19 @@ func measureInstDelay(ctx context.Context, inst *core.Instance, url string) (int
 	return minDuration, nil
 }
 
-// Log writer implementation
-func (w *consoleLogWriter) Write(s string) error {
-	w.logger.Print(s)
+// callbackLogWriter routes log messages to OnEmitStatus
+func (w *callbackLogWriter) Write(s string) error {
+	w.handler.OnEmitStatus(1, "fromLogMonitor "+s)
 	return nil
 }
 
-func (w *consoleLogWriter) Close() error {
+func (w *callbackLogWriter) Close() error {
 	return nil
 }
 
-// createStdoutLogWriter creates a logger that won't print date/time stamps
-func createStdoutLogWriter() corecommlog.WriterCreator {
+// newCallbackLogWriterCreator returns a WriterCreator that sends logs to OnEmitStatus
+func newCallbackLogWriterCreator(handler CoreCallbackHandler) corecommlog.WriterCreator {
 	return func() corecommlog.Writer {
-		return &consoleLogWriter{
-			logger: log.New(os.Stdout, "", 0),
-		}
+		return &callbackLogWriter{handler: handler}
 	}
 }
