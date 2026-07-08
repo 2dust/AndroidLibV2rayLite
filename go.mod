@@ -1,9 +1,9 @@
 module github.com/2dust/AndroidLibV2rayLite
 
-go 1.26.3
+go 1.25.5
 
 require (
-	github.com/v2fly/v2ray-core/v5 v5.51.2
+	github.com/v2fly/v2ray-core/v5 v5.52.0
 	golang.org/x/mobile v0.0.0-20260217195705-b56b3793a9c4
 )
 
@@ -38,16 +38,16 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pion/dtls/v2 v2.2.12 // indirect
-	github.com/pion/dtls/v3 v3.1.2 // indirect
-	github.com/pion/ice/v4 v4.2.5 // indirect
+	github.com/pion/dtls/v3 v3.1.4 // indirect
+	github.com/pion/ice/v4 v4.2.7 // indirect
 	github.com/pion/logging v0.2.4 // indirect
 	github.com/pion/mdns/v2 v2.1.0 // indirect
 	github.com/pion/randutil v0.1.0 // indirect
-	github.com/pion/sctp v1.9.5 // indirect
-	github.com/pion/stun/v3 v3.1.2 // indirect
+	github.com/pion/sctp v1.10.3 // indirect
+	github.com/pion/stun/v3 v3.1.6 // indirect
 	github.com/pion/transport/v2 v2.2.10 // indirect
-	github.com/pion/transport/v4 v4.0.1 // indirect
-	github.com/pion/turn/v5 v5.0.3 // indirect
+	github.com/pion/transport/v4 v4.0.2 // indirect
+	github.com/pion/turn/v5 v5.0.10 // indirect
 	github.com/pires/go-proxyproto v0.12.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
@@ -73,15 +73,15 @@ require (
 	go.starlark.net v0.0.0-20260210143700-b62fd896b91b // indirect
 	go.uber.org/mock v0.6.0 // indirect
 	go4.org/netipx v0.0.0-20231129151722-fdeea329fbba // indirect
-	golang.org/x/crypto v0.51.0 // indirect
+	golang.org/x/crypto v0.53.0 // indirect
 	golang.org/x/exp v0.0.0-20260218203240-3dfff04db8fa // indirect
-	golang.org/x/mod v0.35.0 // indirect
-	golang.org/x/net v0.54.0 // indirect
-	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/sys v0.44.0 // indirect
-	golang.org/x/text v0.37.0 // indirect
+	golang.org/x/mod v0.36.0 // indirect
+	golang.org/x/net v0.56.0 // indirect
+	golang.org/x/sync v0.21.0 // indirect
+	golang.org/x/sys v0.46.0 // indirect
+	golang.org/x/text v0.38.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
-	golang.org/x/tools v0.44.0 // indirect
+	golang.org/x/tools v0.45.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard v0.0.0-20250521234502-f333402bd9cb // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260226221140-a57be14db171 // indirect
