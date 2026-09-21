@@ -1,10 +1,10 @@
 module github.com/2dust/AndroidLibV2rayLite
 
-go 1.25.5
+go 1.26.0
 
 require (
-	github.com/v2fly/v2ray-core/v5 v5.53.0
-	golang.org/x/mobile v0.0.0-20260217195705-b56b3793a9c4
+	github.com/v2fly/v2ray-core/v5 v5.54.0
+	golang.org/x/mobile v0.0.0-20260709172247-6129f5bee9d5
 )
 
 require (
@@ -14,7 +14,6 @@ require (
 	github.com/apernet/quic-go v0.59.1-0.20260217092621-db4786c77a22 // indirect
 	github.com/boljen/go-bitmap v0.0.0-20151001105940-23cd2fb0ce7d // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/desertbit/timer v1.0.1 // indirect
 	github.com/dgryski/go-metro v0.0.0-20250106013310-edb8663e5e33 // indirect
 	github.com/ebfe/bcrypt_pbkdf v0.0.0-20140212075826-3c8d2dcb253a // indirect
@@ -32,24 +31,23 @@ require (
 	github.com/klauspost/reedsolomon v1.13.2 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lunixbochs/struc v0.0.0-20241101090106-8d528fa2c543 // indirect
-	github.com/miekg/dns v1.1.72 // indirect
+	github.com/miekg/dns v1.1.73 // indirect
 	github.com/mustafaturan/bus v1.0.2 // indirect
 	github.com/mustafaturan/monoton v1.0.0 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pion/dtls/v2 v2.2.12 // indirect
-	github.com/pion/dtls/v3 v3.1.4 // indirect
+	github.com/pion/dtls/v3 v3.1.5 // indirect
 	github.com/pion/ice/v4 v4.2.7 // indirect
 	github.com/pion/logging v0.2.4 // indirect
 	github.com/pion/mdns/v2 v2.1.0 // indirect
 	github.com/pion/randutil v0.1.0 // indirect
 	github.com/pion/sctp v1.10.3 // indirect
-	github.com/pion/stun/v3 v3.1.6 // indirect
+	github.com/pion/stun/v3 v3.1.7 // indirect
 	github.com/pion/transport/v2 v2.2.10 // indirect
-	github.com/pion/transport/v4 v4.0.2 // indirect
+	github.com/pion/transport/v4 v4.1.0 // indirect
 	github.com/pion/turn/v5 v5.0.10 // indirect
 	github.com/pires/go-proxyproto v0.15.0 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
 	github.com/quic-go/quic-go v0.61.0 // indirect
 	github.com/refraction-networking/utls v1.8.2 // indirect
@@ -59,7 +57,7 @@ require (
 	github.com/secure-io/siv-go v0.0.0-20180922214919-5ff40651e2c4 // indirect
 	github.com/seiflotfy/cuckoofilter v0.0.0-20240715131351-a2f2c23f1771 // indirect
 	github.com/stretchr/objx v0.5.3 // indirect
-	github.com/stretchr/testify v1.11.1 // indirect
+	github.com/stretchr/testify v1.12.1 // indirect
 	github.com/v2fly/BrowserBridge v0.0.0-20210430233438-0570fc1d7d08 // indirect
 	github.com/v2fly/VSign v0.0.0-20201108000810-e2adc24bf848 // indirect
 	github.com/v2fly/hysteria/core/v2 v2.0.0-20260220231229-39018a43855e // indirect
@@ -72,21 +70,19 @@ require (
 	github.com/xtaci/smux v1.5.56 // indirect
 	go.starlark.net v0.0.0-20260210143700-b62fd896b91b // indirect
 	go.uber.org/mock v0.6.0 // indirect
+	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	go4.org/netipx v0.0.0-20231129151722-fdeea329fbba // indirect
-	golang.org/x/crypto v0.54.0 // indirect
+	golang.org/x/crypto v0.57.0 // indirect
 	golang.org/x/exp v0.0.0-20260218203240-3dfff04db8fa // indirect
-	golang.org/x/mod v0.37.0 // indirect
-	golang.org/x/net v0.56.0 // indirect
-	golang.org/x/sync v0.22.0 // indirect
-	golang.org/x/sys v0.47.0 // indirect
-	golang.org/x/text v0.40.0 // indirect
+	golang.org/x/net v0.59.0 // indirect
+	golang.org/x/sys v0.48.0 // indirect
+	golang.org/x/text v0.42.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
-	golang.org/x/tools v0.47.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard v0.0.0-20250521234502-f333402bd9cb // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260526163538-3dc84a4a5aaa // indirect
-	google.golang.org/grpc v1.83.0 // indirect
-	google.golang.org/protobuf v1.36.11 // indirect
+	google.golang.org/grpc v1.83.2 // indirect
+	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gvisor.dev/gvisor v0.0.0-20260220231412-fe30adbe8e25 // indirect
 	lukechampine.com/blake3 v1.4.1 // indirect
