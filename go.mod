@@ -3,7 +3,7 @@ module github.com/2dust/AndroidLibV2rayLite
 go 1.26.0
 
 require (
-	github.com/v2fly/v2ray-core/v5 v5.54.1
+	github.com/v2fly/v2ray-core/v5 v5.54.2
 	golang.org/x/mobile v0.0.0-20260709172247-6129f5bee9d5
 )
 
